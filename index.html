@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Avtodvofficial</title>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -13,22 +12,10 @@
     color: #222;
     padding: 16px;
   }
-  h1 {
-    font-size: 22px;
-    margin-bottom: 16px;
-    color: #111;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  @media (min-width: 600px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (min-width: 1000px) {
-    .grid { grid-template-columns: repeat(3, 1fr); }
-  }
+  h1 { font-size: 22px; margin-bottom: 16px; color: #111; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
   .card {
     background: #fff;
     border-radius: 12px;
@@ -43,31 +30,11 @@
     background: #eee;
   }
   .card-body { padding: 12px 14px; }
-  .card-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .card-sub {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 8px;
-  }
-  .card-price {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0a7c4a;
-  }
-  .card-city {
-    font-size: 13px;
-    color: #888;
-    margin-top: 4px;
-  }
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: #888;
-  }
+  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .card-sub { font-size: 13px; color: #666; margin-bottom: 8px; }
+  .card-price { font-size: 18px; font-weight: 700; color: #0a7c4a; }
+  .card-city { font-size: 13px; color: #888; margin-top: 4px; }
+  .loading { text-align: center; padding: 40px; color: #888; }
 </style>
 </head>
 <body>
@@ -75,8 +42,11 @@
   <div id="app" class="grid">
     <div class="loading">Загрузка...</div>
   </div>
+
   <script>
-const CSV_URL = 'https://corsproxy.io/?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f%2Fpub%3Fgid%3D0%26single%3Dtrue%26output%3Dcsv';
+    // ID таблицы из твоей ссылки и имя листа
+    const SHEET_ID = '1tjipRM6wpMmLzd9gZEhXZxFHF9ezqESGpTj1oOG7xlY';
+    const SHEET_NAME = 'Avtodvofficial';
 
     function formatPrice(n) {
       return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
@@ -85,26 +55,35 @@ const CSV_URL = 'https://corsproxy.io/?url=https%3A%2F%2Fdocs.google.com%2Fsprea
       return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
     }
 
-    async function loadData() {
+    // Google вызовет эту функцию, когда отдаст данные
+    google = { visualization: { Query: {} } };
+    google.visualization.Query.setResponse = function(data) {
       const app = document.getElementById('app');
       try {
-        const res = await fetch(CSV_URL);
-        const text = await res.text();
-        const parsed = Papa.parse(text, { header: false, skipEmptyLines: true });
-        const rows = parsed.data.slice(1);
-        const cars = rows.filter(r => r[0] && r[1]);
+        if (!data || !data.table || !data.table.rows) {
+          app.innerHTML = '<div class="loading">Нет данных</div>';
+          return;
+        }
+
+        // Превращаем строки Google в обычные массивы
+        const cars = data.table.rows
+          .map(row => row.c.map(cell => cell ? (cell.f || cell.v) : ''))
+          .filter(row => row[0] && row[1]);
+
         if (cars.length === 0) {
           app.innerHTML = '<div class="loading">Нет данных</div>';
           return;
         }
+
         app.innerHTML = cars.map(car => {
           const brand = car[0] || '';
           const model = car[1] || '';
-          const price = parseFloat(car[3]) || 0;
-          const img = car[4] || '';
-          const year = car[5] || '';
-          const km = parseFloat(car[6]) || 0;
-          const city = car[14] || '';
+          const price = parseFloat(String(car[3]).replace(/\s/g,'').replace(',','.')) || 0;
+          const img   = car[4] || '';
+          const year  = car[5] || '';
+          const km    = parseFloat(String(car[6]).replace(/\s/g,'').replace(',','.')) || 0;
+          const city  = car[14] || '';
+
           return `
             <div class="card">
               <img src="${img}" alt="${brand} ${model}" loading="lazy">
@@ -118,11 +97,15 @@ const CSV_URL = 'https://corsproxy.io/?url=https%3A%2F%2Fdocs.google.com%2Fsprea
           `;
         }).join('');
       } catch (e) {
-        app.innerHTML = '<div class="loading">Ошибка загрузки: ' + e.message + '</div>';
+        app.innerHTML = '<div class="loading">Ошибка: ' + e.message + '</div>';
       }
-    }
+    };
 
-    loadData();
+    // Загружаем данные через JSONP — официальный способ Google
+    const script = document.createElement('script');
+    script.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+                 '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
+    document.head.appendChild(script);
   </script>
 </body>
 </html>
