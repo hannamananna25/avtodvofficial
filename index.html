@@ -487,8 +487,9 @@
     const bodies = [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort();
     renderChips('ext-body-chips', 'bodies', bodies.map(v => ({ v, l: BODY_LABELS[v] || v })));
 
-    renderChips('ext-color-chips', 'colors', [...new Set(CARS.map(c=>fields(c).color).filter(Boolean))].sort().slice(0,20).map(v=>({v,l:v})));
-
+        const PRESET_COLORS = ['Белый','Черный','Серый','Серебристый','Синий','Красный','Оранжевый','Зелёный','Коричневый','Голубой','Желтый','Бежевый'];
+    const colorsSet = new Set([...PRESET_COLORS, ...CARS.map(c=>fields(c).color).filter(Boolean)]);
+    renderChips('ext-color-chips', 'colors', [...colorsSet].sort().slice(0,25).map(v=>({v,l:v})));
     document.getElementById('ext-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
