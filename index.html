@@ -669,7 +669,7 @@
     if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  function initGallerySwipe() }
+    function initGallerySwipe() {
     const el = document.getElementById('gallery-main');
     if (!el || el.dataset.swipeInit) return;
     el.dataset.swipeInit = '1';
@@ -708,11 +708,7 @@
        }, { passive: true });
   }
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  function closeModal() {
+   function closeModal() {
     document.getElementById('modal').classList.remove('open');
     document.body.style.overflow = '';
   }
