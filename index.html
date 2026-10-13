@@ -2,123 +2,532 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Avtodvofficial</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #222; padding: 12px; }
-  h1 { font-size: 20px; margin-bottom: 12px; color: #111; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: #f0f1f3;
+    color: #1a1a1a;
+    padding-bottom: 64px;
+    overflow-x: hidden;
+  }
 
-  .grid {
+  /* ======== ШАПКА ======== */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: #fff;
+    padding: 10px 12px 8px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  }
+  .header-top {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .location {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 14px; font-weight: 600; color: #1a1a1a;
+    flex-shrink: 0;
+  }
+  .location::after {
+    content: '▾'; font-size: 10px; color: #888; margin-left: 2px;
+  }
+  .search-wrap {
+    flex: 1; position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    height: 38px;
+    border: 1.5px solid #e5e6e8;
+    border-radius: 19px;
+    background: #f5f6f8;
+    padding: 0 16px 0 36px;
+    font-size: 14px;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: #0a7c4a; background: #fff; }
+  .search-wrap::before {
+    content: '🔍'; position: absolute; left: 13px; top: 50%;
+    transform: translateY(-50%); font-size: 14px; opacity: .5;
+  }
+
+  /* ======== ФИЛЬТРЫ ======== */
+  .filters {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding: 6px 0 2px;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 16px;
+    background: #f5f6f8;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all .15s;
+    user-select: none;
+  }
+  .chip:hover { background: #ebedf0; }
+  .chip.active {
+    background: #e8f3ee;
+    color: #0a7c4a;
+    border-color: #0a7c4a;
+    font-weight: 600;
+  }
+
+  /* ======== СЧЁТЧИК ======== */
+  .count {
+    padding: 10px 12px 6px;
+    font-size: 12px;
+    color: #888;
+    background: #f0f1f3;
+  }
+
+  /* ======== СПИСОК ======== */
+  .list {
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .row {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .row:active { transform: scale(0.99); }
+  .row:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+
+  .row-img {
+    width: 130px;
+    height: 96px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #eee;
+    position: relative;
+  }
+  .row-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  .row-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .row-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .row-sub {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #e8f3ee;
+    color: #0a7c4a;
+    font-weight: 500;
+  }
+  .tag.blue { background: #e8eefb; color: #2563eb; }
+  .tag.orange { background: #fef3e2; color: #c96b13; }
+
+  .row-price {
+    font-size: 17px;
+    font-weight: 700;
+    color: #d42a2a;
+    line-height: 1.1;
+  }
+
+  /* ======== НИЖНЯЯ НАВИГАЦИЯ ======== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #ebedf0;
+    display: flex;
+    z-index: 500;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 10px;
+    color: #999;
+    cursor: pointer;
+    transition: color .15s;
+    text-decoration: none;
+  }
+  .nav-item .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-item.active { color: #0a7c4a; font-weight: 600; }
+
+  /* ======== МОДАЛЬНОЕ ОКНО ======== */
+  .modal {
+    position: fixed; inset: 0; background: #fff;
+    display: none; z-index: 1000; overflow-y: auto;
+    animation: slideIn .2s ease-out;
+  }
+  .modal.open { display: block; }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .modal-top {
+    position: sticky; top: 0; z-index: 10;
+    background: #fff;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #f0f1f3;
+  }
+  .back-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #f5f6f8; border: none;
+    font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #1a1a1a;
+  }
+  .back-btn:hover { background: #ebedf0; }
+  .modal-top-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+
+  .gallery-main { width: 100%; aspect-ratio: 4/3; background: #eee; }
+  .gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .gallery-thumbs {
+    display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px;
+    scrollbar-width: none; background: #fafafa;
+  }
+  .gallery-thumbs::-webkit-scrollbar { display: none; }
+  .gallery-thumbs img {
+    width: 64px; height: 48px; object-fit: cover; border-radius: 6px;
+    cursor: pointer; border: 2px solid transparent; flex-shrink: 0;
+  }
+  .gallery-thumbs img.active { border-color: #0a7c4a; }
+
+  .modal-body { padding: 16px; }
+  .modal-title { font-size: 20px; font-weight: 700; line-height: 1.25; margin-bottom: 8px; color: #111; }
+  .modal-price { font-size: 26px; font-weight: 800; color: #d42a2a; margin-bottom: 16px; }
+
+  .specs-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 20px;
   }
-  @media (min-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-  @media (min-width: 1400px) { .grid { grid-template-columns: repeat(5, 1fr); } }
-
-  .card {
-    background: #fff;
+  .spec-box {
+    background: #f7f8fa;
     border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    transition: transform .15s;
+    padding: 10px 12px;
   }
-  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+  .spec-box .lbl { font-size: 11px; color: #888; margin-bottom: 2px; }
+  .spec-box .val { font-size: 14px; font-weight: 600; color: #1a1a1a; }
 
-  .card img {
-    width: 100%;
-    aspect-ratio: 3/2;
-    object-fit: cover;
+  .section-h {
+    font-size: 15px; font-weight: 700; margin: 20px 0 8px; color: #111;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-h::before {
+    content: ''; width: 3px; height: 16px; background: #0a7c4a;
+    border-radius: 2px;
+  }
+  .desc-text {
+    font-size: 14px; line-height: 1.6; color: #444;
+    white-space: pre-wrap;
+  }
+
+  .cta {
     display: block;
-    background: #eee;
+    width: 100%;
+    padding: 14px;
+    background: #0a7c4a;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 20px;
   }
+  .cta:active { background: #065c37; }
 
-  .card-body { padding: 8px 10px 10px; }
-  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; line-height: 1.2; }
-  .card-sub { font-size: 11px; color: #666; margin-bottom: 6px; }
-  .card-price { font-size: 15px; font-weight: 700; color: #0a7c4a; }
-  .card-city { font-size: 11px; color: #888; margin-top: 2px; }
-  .loading { text-align: center; padding: 40px; color: #888; }
+  .loading, .empty {
+    text-align: center; padding: 60px 20px; color: #888; font-size: 14px;
+  }
 </style>
 </head>
 <body>
-  <h1>Avtodvofficial</h1>
-  <div id="app" class="grid">
-    <div class="loading">Загрузка...</div>
+
+<!-- ============ ШАПКА ============ -->
+<div class="header">
+  <div class="header-top">
+    <div class="location">Везде</div>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Марка, модель...">
+    </div>
   </div>
-  <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
+  <div class="filters" id="brand-filters"></div>
+</div>
 
-    function formatPrice(n) {
-      return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
-    }
-    function formatKm(n) {
-      return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
-    }
+<div class="count" id="count">Загрузка...</div>
+<div class="list" id="app"></div>
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [], cell = '', inQuotes = false;
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i], next = text[i + 1];
-        if (inQuotes) {
-          if (ch === '"' && next === '"') { cell += '"'; i++; }
-          else if (ch === '"') { inQuotes = false; }
-          else { cell += ch; }
-        } else {
-          if (ch === '"') { inQuotes = true; }
-          else if (ch === ',') { row.push(cell); cell = ''; }
-          else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
-          else if (ch !== '\r') { cell += ch; }
-        }
+<!-- ============ НИЖНЯЯ НАВИГАЦИЯ ============ -->
+<div class="bottom-nav">
+  <a class="nav-item active" href="#">
+    <span class="nav-icon">🏠</span><span>Главная</span>
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">🔍</span><span>Каталог</span>
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">❤️</span><span>Избранное</span>
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">👤</span><span>Профиль</span>
+  </a>
+</div>
+
+<!-- ============ МОДАЛЬНОЕ ОКНО ============ -->
+<div id="modal" class="modal">
+  <div class="modal-top">
+    <button class="back-btn" onclick="closeModal()">←</button>
+    <div class="modal-top-title" id="m-top-title">Автомобиль</div>
+  </div>
+  <div class="gallery-main"><img id="m-img" src="" alt=""></div>
+  <div class="gallery-thumbs" id="m-thumbs"></div>
+  <div class="modal-body">
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-price" id="m-price"></div>
+    <div class="specs-grid" id="m-specs"></div>
+    <div class="section-h">Описание</div>
+    <div class="desc-text" id="m-desc"></div>
+    <a class="cta" id="m-link" href="#" target="_blank" rel="noopener">Открыть на che168 →</a>
+  </div>
+</div>
+
+<script>
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
+
+  let CARS = [];
+  let FILTERED = [];
+  let activeBrand = 'Все';
+  let searchText = '';
+
+  function formatPrice(n) {
+    return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
+  }
+  function formatKm(n) {
+    return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
+  }
+
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i], next = text[i + 1];
+      if (inQuotes) {
+        if (ch === '"' && next === '"') { cell += '"'; i++; }
+        else if (ch === '"') { inQuotes = false; }
+        else { cell += ch; }
+      } else {
+        if (ch === '"') { inQuotes = true; }
+        else if (ch === ',') { row.push(cell); cell = ''; }
+        else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+        else if (ch !== '\r') { cell += ch; }
       }
-      if (cell || row.length) { row.push(cell); rows.push(row); }
-      return rows;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fields(car) {
+    return {
+      brand: car[0] || '',
+      model: car[1] || '',
+      trim:  car[2] || '',
+      price: parseFloat(String(car[3]).replace(/\s/g,'').replace(',','.')) || 0,
+      img:   car[17] || car[4] || '',
+      year:  car[5] || '',
+      km:    parseFloat(String(car[6]).replace(/\s/g,'').replace(',','.')) || 0,
+      url:   car[7] || '',
+      color: car[8] || '',
+      volume: car[9] || '',
+      power: car[10] || '',
+      gearbox: car[11] || '',
+      fuel: car[12] || '',
+      city: car[14] || '',
+      allPhotos: car[55] || '',
+      engine: car[56] || '',
+      drive: car[57] || '',
+      desc: car[58] || ''
+    };
+  }
+
+  function renderBrandFilters() {
+    const brands = ['Все', ...new Set(CARS.map(c => c[0]).filter(Boolean))];
+    document.getElementById('brand-filters').innerHTML = brands.map(b => `
+      <div class="chip ${b === activeBrand ? 'active' : ''}" onclick="setBrand('${esc(b)}')">${esc(b)}</div>
+    `).join('');
+  }
+
+  function setBrand(b) {
+    activeBrand = b;
+    renderBrandFilters();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    FILTERED = CARS.filter(car => {
+      const f = fields(car);
+      if (activeBrand !== 'Все' && f.brand !== activeBrand) return false;
+      if (searchText) {
+        const haystack = (f.brand + ' ' + f.model + ' ' + f.trim).toLowerCase();
+        if (!haystack.includes(searchText.toLowerCase())) return false;
+      }
+      return true;
+    });
+    renderList();
+  }
+
+  function renderList() {
+    const app = document.getElementById('app');
+    const cnt = document.getElementById('count');
+    cnt.textContent = 'Найдено: ' + FILTERED.length;
+
+    if (FILTERED.length === 0) {
+      app.innerHTML = '<div class="empty">Ничего не найдено</div>';
+      return;
     }
 
-    async function loadData() {
-      const app = document.getElementById('app');
-      try {
-        const res = await fetch(CSV_URL);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        const rows = parseCSV(text).slice(1);
-        const cars = rows.filter(r => r[0] && r[1]);
-
-        if (cars.length === 0) {
-          app.innerHTML = '<div class="loading">Нет данных</div>';
-          return;
-        }
-
-        app.innerHTML = cars.map(car => {
-          const brand = car[0] || '';
-          const model = car[1] || '';
-          const price = parseFloat(String(car[3]).replace(/\s/g,'').replace(',','.')) || 0;
-          const img   = car[17] || car[4] || '';   // ← фото из Q (готовая проксированная ссылка)
-          const year  = car[5] || '';
-          const km    = parseFloat(String(car[6]).replace(/\s/g,'').replace(',','.')) || 0;
-          const city  = car[14] || '';
-
-          return `
-            <div class="card">
-              <img src="${img}" alt="${brand} ${model}" loading="lazy" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="card-title">${brand} ${model}</div>
-                <div class="card-sub">${year} г. • ${formatKm(km)}</div>
-                <div class="card-price">${formatPrice(price)}</div>
-                <div class="card-city">${city}</div>
+    app.innerHTML = FILTERED.map((car) => {
+      const f = fields(car);
+      const idx = CARS.indexOf(car);
+      return `
+        <div class="row" onclick="openModal(${idx})">
+          <div class="row-img">
+            <img src="${esc(f.img)}" alt="" loading="lazy" onerror="this.style.display='none'">
+          </div>
+          <div class="row-body">
+            <div>
+              <div class="row-title">${esc(f.brand)} ${esc(f.model)}</div>
+              <div class="row-sub">${esc(f.year)} г. • ${formatKm(f.km)} • ${esc(f.city)}</div>
+              <div class="row-tags">
+                <span class="tag">Проверено</span>
+                <span class="tag blue">${esc(f.gearbox)}</span>
               </div>
             </div>
-          `;
-        }).join('');
-      } catch (e) {
-        app.innerHTML = '<div class="loading">Ошибка загрузки: ' + e.message + '</div>';
-      }
-    }
+            <div class="row-price">${formatPrice(f.price)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
-    loadData();
-  </script>
+  function openModal(idx) {
+    const f = fields(CARS[idx]);
+    document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
+    document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' — ' + f.trim : '');
+    document.getElementById('m-price').textContent = formatPrice(f.price);
+    document.getElementById('m-desc').textContent = f.desc || '—';
+    document.getElementById('m-link').href = f.url || '#';
+
+    const specs = [
+      ['Год', f.year],
+      ['Пробег', f.km ? formatKm(f.km) : '—'],
+      ['Объём', f.volume ? f.volume + ' л' : '—'],
+      ['Мощность', f.power ? f.power + ' л.с.' : '—'],
+      ['Коробка', f.gearbox || '—'],
+      ['Привод', f.drive || '—'],
+      ['Топливо', f.fuel || '—'],
+      ['Двигатель', f.engine || '—'],
+      ['Цвет', f.color || '—'],
+      ['Город', f.city || '—']
+    ];
+    document.getElementById('m-specs').innerHTML = specs.map(([l, v]) => `
+      <div class="spec-box"><div class="lbl">${esc(l)}</div><div class="val">${esc(v)}</div></div>
+    `).join('');
+
+    const photos = (f.allPhotos || f.img || '').split(',').map(s => s.trim()).filter(Boolean);
+    document.getElementById('m-img').src = photos[0] || f.img || '';
+    document.getElementById('m-thumbs').innerHTML = photos.map((p, i) =>
+      `<img src="${esc(p)}" class="${i===0?'active':''}" onclick="setMain(this)" onerror="this.style.display='none'">`
+    ).join('');
+    document.querySelectorAll('#m-thumbs img').forEach(img => {
+      img.addEventListener('click', () => {
+        document.getElementById('m-img').src = img.src;
+        document.querySelectorAll('#m-thumbs img').forEach(i => i.classList.remove('active'));
+        img.classList.add('active');
+      });
+    });
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modal').scrollTop = 0;
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    searchText = e.target.value;
+    applyFilters();
+  });
+
+  (async () => {
+    try {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      CARS = parseCSV(text).slice(1).filter(r => r[0] && r[1]);
+      renderBrandFilters();
+      applyFilters();
+    } catch (e) {
+      document.getElementById('app').innerHTML = '<div class="empty">Ошибка загрузки: ' + esc(e.message) + '</div>';
+    }
+  })();
+</script>
 </body>
 </html>
