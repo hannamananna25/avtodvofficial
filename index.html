@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avtodvofficial</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+    padding: 16px;
+  }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: #111;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 600px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .card img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    background: #eee;
+  }
+  .card-body { padding: 12px 14px; }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .card-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0a7c4a;
+  }
+  .card-city {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+  }
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+  <h1>Avtodvofficial</h1>
+  <div id="app" class="grid">
+    <div class="loading">Загрузка...</div>
+  </div>
+  <script>
+    const CSV_URL = 'https://api.codetabs.com/v1/proxy?quest=https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
+
+    function formatPrice(n) {
+      return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
+    }
+    function formatKm(n) {
+      return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
+    }
+
+    async function loadData() {
+      const app = document.getElementById('app');
+      try {
+        const res = await fetch(CSV_URL);
+        const text = await res.text();
+        const parsed = Papa.parse(text, { header: false, skipEmptyLines: true });
+        const rows = parsed.data.slice(1);
+        const cars = rows.filter(r => r[0] && r[1]);
+        if (cars.length === 0) {
+          app.innerHTML = '<div class="loading">Нет данных</div>';
+          return;
+        }
+        app.innerHTML = cars.map(car => {
+          const brand = car[0] || '';
+          const model = car[1] || '';
+          const price = parseFloat(car[3]) || 0;
+          const img = car[4] || '';
+          const year = car[5] || '';
+          const km = parseFloat(car[6]) || 0;
+          const city = car[14] || '';
+          return `
+            <div class="card">
+              <img src="${img}" alt="${brand} ${model}" loading="lazy">
+              <div class="card-body">
+                <div class="card-title">${brand} ${model}</div>
+                <div class="card-sub">${year} г. • ${formatKm(km)}</div>
+                <div class="card-price">${formatPrice(price)}</div>
+                <div class="card-city">${city}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        app.innerHTML = '<div class="loading">Ошибка загрузки: ' + e.message + '</div>';
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
