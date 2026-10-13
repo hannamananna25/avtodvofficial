@@ -479,7 +479,9 @@
     renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
     renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
     renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
-    renderChips('ext-drive-chips', 'drives', [...new Set(CARS.map(c=>fields(c).drive).filter(Boolean))].sort().map(v=>({v,l:v})));
+        const PRESET_DRIVES = ['Передний привод','Задний привод','Полный привод','FWD','RWD','AWD'];
+    const drivesSet = new Set([...PRESET_DRIVES, ...CARS.map(c=>fields(c).drive).filter(Boolean)]);
+    renderChips('ext-drive-chips', 'drives', [...drivesSet].map(v=>({v,l:v})));
 
     // ← Тип кузова: значения-ключи (SUV, sedan...), но метки русские
     const bodies = [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort();
