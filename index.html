@@ -294,7 +294,7 @@
       power: num(car[10]), gearbox: car[11]||'', fuel: car[12]||'',
       city: car[14]||'', allPhotos: car[55]||'', engine: car[56]||'',
       drive: car[57]||'', desc: car[58]||'', datePub: car[59]||'',
-      body: car[64]||''  // ← BM: Тип_кузова из VLOOKUP
+      body: car[63]||car[64]||''  // ← BL/BM: Тип_кузова
     };
   }
 
