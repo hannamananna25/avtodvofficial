@@ -645,8 +645,12 @@
       img.addEventListener('click', () => goToPhoto(Number(img.dataset.idx)));
     });
 
-    // Свайп
+        // Свайп
     initGallerySwipe();
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modal').scrollTop = 0;
   }
 
   function goToPhoto(idx) {
@@ -665,7 +669,7 @@
     if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  function initGallerySwipe() {
+  function initGallerySwipe() }
     const el = document.getElementById('gallery-main');
     if (!el || el.dataset.swipeInit) return;
     el.dataset.swipeInit = '1';
@@ -701,12 +705,12 @@
       const idx = window.__galleryIdx || 0;
       if (dx < 0) goToPhoto(idx + 1);
       else goToPhoto(idx - 1);
-    }, { passive: true });
+       }, { passive: true });
   }
 
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    document.getElementById('modal').scrollTop = 0;
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
   }
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
