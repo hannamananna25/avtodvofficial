@@ -479,7 +479,7 @@
     renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
     renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
     renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
-        const PRESET_DRIVES = ['Передний привод','Задний привод','Полный привод','FWD','RWD','AWD'];
+    const PRESET_DRIVES = ['Передний привод','Задний привод','Полный привод'];
     const drivesSet = new Set([...PRESET_DRIVES, ...CARS.map(c=>fields(c).drive).filter(Boolean)]);
     renderChips('ext-drive-chips', 'drives', [...drivesSet].map(v=>({v,l:v})));
 
@@ -487,7 +487,7 @@
     const bodies = [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort();
     renderChips('ext-body-chips', 'bodies', bodies.map(v => ({ v, l: BODY_LABELS[v] || v })));
 
-        const PRESET_COLORS = ['Белый','Черный','Серый','Серебристый','Синий','Красный','Оранжевый','Зелёный','Коричневый','Голубой','Желтый','Бежевый'];
+    const PRESET_COLORS = ['Белый','Черный','Серый','Серебристый','Синий','Красный','Оранжевый','Зелёный','Коричневый','Голубой','Желтый','Бежевый'];
     const colorsSet = new Set([...PRESET_COLORS, ...CARS.map(c=>fields(c).color).filter(Boolean)]);
     renderChips('ext-color-chips', 'colors', [...colorsSet].sort().slice(0,25).map(v=>({v,l:v})));
     document.getElementById('ext-modal').classList.add('open');
@@ -591,8 +591,15 @@
       `<div class="spec-box"><div class="lbl">${esc(l)}</div><div class="val">${esc(v)}</div></div>`
     ).join('');
 
-    const photos = (f.allPhotos || f.img || '').split(',').map(s => s.trim()).filter(Boolean);
-    document.getElementById('m-img').src = photos[0] || f.img || '';
+       const rawPhotos = (f.allPhotos || '').split(',').map(s => s.trim()).filter(Boolean);
+    const photos = rawPhotos.map(url => {
+      if (url.includes('autoimg.cn') && !url.includes('wsrv.nl')) {
+        return 'https://wsrv.nl/?url=' + encodeURIComponent(url);
+      }
+      return url;
+    });
+    if (photos.length === 0 && f.img) photos.push(f.img);
+    document.getElementById('m-img').src = photos[0] || '';
     document.getElementById('m-thumbs').innerHTML = photos.map((p,i) =>
       `<img src="${esc(p)}" class="${i===0?'active':''}" onerror="this.style.display='none'">`
     ).join('');
