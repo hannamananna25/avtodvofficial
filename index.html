@@ -3,331 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Avtodvofficial</title>
+<title>АвтоДВ</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #f0f1f3; color: #1a1a1a;
-    padding-bottom: 64px; overflow-x: hidden;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f1f3; color: #1a1a1a; overflow-x: hidden; }
 
   /* ===== ШАПКА ===== */
-  .header {
-    position: sticky; top: 0; z-index: 100;
-    background: #fff; padding: 10px 12px 8px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
-  }
+  .header { position: sticky; top: 0; z-index: 100; background: #fff; padding: 10px 12px 8px; box-shadow: 0 1px 0 rgba(0,0,0,.05); }
   .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .logo {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: linear-gradient(135deg, #d42a2a, #7a0a0a);
+
+  .logo-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .logo-fallback {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #99092C, #50041a);
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 800; font-size: 11px;
+    color: #fff; font-weight: 800; font-size: 10px;
     text-align: center; line-height: 1; flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(212,42,42,0.25);
   }
+
   .search-wrap { flex: 1; position: relative; }
-  .search-wrap input {
-    width: 100%; height: 40px; border: 1.5px solid #e5e6e8;
-    border-radius: 20px; background: #f5f6f8;
-    padding: 0 16px 0 38px; font-size: 14px; color: #1a1a1a;
-    outline: none; transition: border-color .15s;
-  }
-  .search-wrap input:focus { border-color: #0a7c4a; background: #fff; }
-  .search-wrap::before {
-    content: '🔍'; position: absolute; left: 14px; top: 50%;
-    transform: translateY(-50%); font-size: 14px; opacity: .5;
-  }
+  .search-wrap input { width: 100%; height: 40px; border: 1.5px solid #e5e6e8; border-radius: 20px; background: #f5f6f8; padding: 0 16px 0 38px; font-size: 14px; outline: none; }
+  .search-wrap input:focus { border-color: #99092C; background: #fff; }
+  .search-wrap::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .5; }
 
   /* ===== ФИЛЬТР-КНОПКИ ===== */
-  .filter-bar {
-    display: flex; gap: 6px; overflow-x: auto; padding: 2px 0;
-    scrollbar-width: none;
-  }
+  .filter-bar { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; scrollbar-width: none; }
   .filter-bar::-webkit-scrollbar { display: none; }
-  .fbtn {
-    flex-shrink: 0; padding: 8px 14px;
-    border-radius: 18px; background: #f5f6f8;
-    font-size: 13px; color: #333;
-    cursor: pointer; border: 1.5px solid transparent;
-    user-select: none; transition: all .15s;
-    display: flex; align-items: center; gap: 4px;
-    font-weight: 500;
-  }
-  .fbtn::after {
-    content: '▾'; font-size: 9px; color: #888; margin-left: 2px;
-  }
-  .fbtn.active {
-    background: #e8f3ee; color: #0a7c4a;
-    border-color: #0a7c4a; font-weight: 600;
-  }
-  .fbtn.active::after { color: #0a7c4a; }
+  .fbtn { flex-shrink: 0; padding: 8px 14px; border-radius: 18px; background: #f5f6f8; font-size: 13px; color: #333; cursor: pointer; border: 1.5px solid transparent; user-select: none; display: flex; align-items: center; gap: 4px; font-weight: 500; }
+  .fbtn::after { content: '▾'; font-size: 9px; color: #888; margin-left: 2px; }
+  .fbtn.active { background: #fce8ee; color: #99092C; border-color: #99092C; font-weight: 600; }
+  .fbtn.active::after { color: #99092C; }
 
-  .count {
-    padding: 10px 14px 6px; font-size: 12px; color: #888;
-    background: #f0f1f3;
-  }
+  .count { padding: 10px 14px 6px; font-size: 12px; color: #888; }
 
   /* ===== СПИСОК ===== */
-  .list { padding: 0 8px; display: flex; flex-direction: column; gap: 8px; }
-  .row {
-    background: #fff; border-radius: 12px; overflow: hidden;
-    display: flex; gap: 10px; padding: 10px; cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    transition: transform .12s, box-shadow .12s;
-  }
-  .row:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
-  .row:active { transform: scale(0.99); }
-  .row-img {
-    width: 130px; height: 96px; flex-shrink: 0;
-    border-radius: 8px; overflow: hidden; background: #eee;
-  }
+  .list { padding: 0 8px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .row { background: #fff; border-radius: 12px; overflow: hidden; display: flex; gap: 10px; padding: 10px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .row:hover { box-shadow: 0 3px 12px rgba(0,0,0,.08); }
+  .row:active { transform: scale(.99); }
+  .row-img { width: 130px; height: 96px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #eee; }
   .row-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .row-body {
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .row-title {
-    font-size: 14px; font-weight: 600; line-height: 1.3;
-    margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  }
-  .row-sub {
-    font-size: 12px; color: #888; margin-bottom: 4px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .row-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }
-  .tag {
-    font-size: 10px; padding: 2px 6px; border-radius: 4px;
-    background: #e8f3ee; color: #0a7c4a; font-weight: 500;
-  }
-  .tag.blue { background: #e8eefb; color: #2563eb; }
-  .row-price { font-size: 17px; font-weight: 700; color: #d42a2a; }
+  .row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .row-title { font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 3px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .row-sub { font-size: 12px; color: #888; margin-bottom: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .row-price { font-size: 17px; font-weight: 700; color: #99092C; }
 
-  /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
-    background: #fff; border-top: 1px solid #ebedf0;
-    display: flex; z-index: 500;
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 2px;
-    font-size: 10px; color: #999; text-decoration: none;
-  }
-  .nav-item .nav-icon { font-size: 20px; line-height: 1; }
-  .nav-item.active { color: #0a7c4a; font-weight: 600; }
-
-  /* ===== БОТТОМ-ШИТ ===== */
-  .sheet-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.45);
-    display: none; z-index: 900;
-  }
+  /* ===== BOTTOM-SHEET ===== */
+  .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; z-index: 900; }
   .sheet-overlay.open { display: block; }
-  .sheet {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    background: #fff; border-radius: 18px 18px 0 0;
-    max-height: 78vh; overflow-y: auto;
-    transform: translateY(100%); transition: transform .25s ease-out;
-    z-index: 901; padding-bottom: env(safe-area-inset-bottom);
-  }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 18px 18px 0 0; max-height: 78vh; overflow-y: auto; transform: translateY(100%); transition: transform .25s ease-out; z-index: 901; }
   .sheet.open { transform: none; }
-  .sheet-head {
-    position: sticky; top: 0; background: #fff;
-    padding: 14px 18px 10px; border-bottom: 1px solid #f0f1f3;
-    display: flex; justify-content: space-between; align-items: center;
-    z-index: 2;
-  }
+  .sheet-head { position: sticky; top: 0; background: #fff; padding: 14px 18px 10px; border-bottom: 1px solid #f0f1f3; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
   .sheet-head h3 { font-size: 17px; font-weight: 700; }
-  .sheet-head .close {
-    background: none; border: none; font-size: 22px;
-    color: #888; cursor: pointer; padding: 0 4px;
-  }
+  .sheet-head .close { background: none; border: none; font-size: 22px; color: #888; cursor: pointer; padding: 0 4px; }
   .sheet-body { padding: 12px 18px 24px; }
 
-  .radio-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 0; border-bottom: 1px solid #f5f6f8;
-    cursor: pointer; font-size: 14px;
-  }
+  .radio-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f5f6f8; cursor: pointer; font-size: 14px; }
   .radio-row:last-child { border-bottom: none; }
-  .radio-row input[type="radio"] {
-    width: 18px; height: 18px; accent-color: #0a7c4a; cursor: pointer;
-  }
-  .radio-row.selected { color: #0a7c4a; font-weight: 600; }
+  .radio-row input[type="radio"] { width: 18px; height: 18px; accent-color: #99092C; cursor: pointer; }
+  .radio-row.selected { color: #99092C; font-weight: 600; }
 
-  .check-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 0; cursor: pointer; font-size: 14px;
-  }
-  .check-row input[type="checkbox"] {
-    width: 18px; height: 18px; accent-color: #0a7c4a; cursor: pointer;
-  }
+  .year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 4px 0; }
+  .year-cell { padding: 12px 4px; text-align: center; background: #f5f6f8; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid transparent; user-select: none; }
+  .year-cell.active { background: #fce8ee; color: #99092C; border-color: #99092C; }
 
-  .range-block { margin-bottom: 18px; }
-  .range-block label {
-    display: block; font-size: 13px; color: #666; margin-bottom: 8px;
-  }
-  .range-inputs {
-    display: flex; gap: 8px; align-items: center;
-  }
-  .range-inputs input {
-    flex: 1; padding: 10px 12px; font-size: 14px;
-    border: 1.5px solid #e5e6e8; border-radius: 10px;
-    outline: none; background: #fafbfc;
-  }
-  .range-inputs input:focus { border-color: #0a7c4a; background: #fff; }
-  .range-inputs span { color: #888; font-size: 13px; }
+  .slider-row { margin-bottom: 14px; }
+  .slider-row .lbl { display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-bottom: 8px; }
+  .slider-row .val { color: #99092C; font-weight: 700; }
+  .slider-row input[type=range] { width: 100%; accent-color: #99092C; height: 28px; }
 
-  .slider-row {
-    display: flex; flex-direction: column; gap: 6px;
-    margin-bottom: 16px;
-  }
-  .slider-row .lbl {
-    font-size: 12px; color: #666;
-    display: flex; justify-content: space-between;
-  }
-  .slider-row input[type="range"] {
-    width: 100%; accent-color: #0a7c4a;
-  }
+  .chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip-toggle { padding: 9px 14px; border-radius: 16px; background: #f5f6f8; font-size: 13px; color: #444; cursor: pointer; border: 1.5px solid transparent; user-select: none; }
+  .chip-toggle.active { background: #fce8ee; color: #99092C; border-color: #99092C; font-weight: 600; }
 
-  .sheet-actions {
-    display: flex; gap: 8px; padding: 12px 18px 16px;
-    background: #fff; position: sticky; bottom: 0;
-    border-top: 1px solid #f0f1f3;
-  }
-  .btn-reset {
-    flex: 1; padding: 13px; background: #f5f6f8;
-    border: none; border-radius: 12px;
-    font-weight: 600; font-size: 14px; cursor: pointer;
-    color: #555;
-  }
-  .btn-apply {
-    flex: 2; padding: 13px; background: #0a7c4a;
-    border: none; border-radius: 12px;
-    font-weight: 700; font-size: 14px; cursor: pointer;
-    color: #fff;
-  }
+  .sheet-actions { display: flex; gap: 8px; padding: 12px 18px 16px; background: #fff; position: sticky; bottom: 0; border-top: 1px solid #f0f1f3; }
+  .btn-reset { flex: 1; padding: 13px; background: #f5f6f8; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; color: #555; }
+  .btn-apply { flex: 2; padding: 13px; background: #99092C; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; color: #fff; }
 
-  /* ===== МОДАЛКА РАСШИРЕННОГО ===== */
-  .ext-modal {
-    position: fixed; inset: 0; background: #fff;
-    display: none; z-index: 1100; overflow-y: auto;
-  }
+  /* ===== EXT ===== */
+  .ext-modal { position: fixed; inset: 0; background: #fff; display: none; z-index: 1100; overflow-y: auto; }
   .ext-modal.open { display: block; }
-  .ext-head {
-    position: sticky; top: 0; background: #fff;
-    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
-    border-bottom: 1px solid #f0f1f3; z-index: 10;
-  }
+  .ext-head { position: sticky; top: 0; background: #fff; padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f1f3; z-index: 10; }
   .ext-head h3 { font-size: 16px; font-weight: 700; flex: 1; }
-  .ext-head .back {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: #f5f6f8; border: none; font-size: 18px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
+  .ext-head .back { width: 34px; height: 34px; border-radius: 50%; background: #f5f6f8; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .ext-body { padding: 14px 18px 100px; }
   .ext-section { margin-bottom: 22px; }
-  .ext-section h4 {
-    font-size: 13px; color: #888; text-transform: uppercase;
-    letter-spacing: .4px; margin-bottom: 10px; font-weight: 600;
-  }
-  .ext-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  }
-  .ext-input, .ext-select {
-    width: 100%; padding: 11px 14px; font-size: 14px;
-    border: 1.5px solid #e5e6e8; border-radius: 10px;
-    outline: none; background: #fafbfc; color: #1a1a1a;
-  }
-  .ext-input:focus, .ext-select:focus { border-color: #0a7c4a; background: #fff; }
-  .ext-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .ext-chip {
-    padding: 7px 14px; border-radius: 16px;
-    background: #f5f6f8; font-size: 13px; color: #444;
-    cursor: pointer; border: 1.5px solid transparent; user-select: none;
-  }
-  .ext-chip.active {
-    background: #e8f3ee; color: #0a7c4a;
-    border-color: #0a7c4a; font-weight: 600;
-  }
-  .ext-actions {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    display: flex; gap: 8px; padding: 12px 18px;
-    background: #fff; border-top: 1px solid #f0f1f3;
-    z-index: 11;
-  }
+  .ext-section h4 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; font-weight: 600; }
+  .ext-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ext-input, .ext-select { width: 100%; padding: 11px 14px; font-size: 14px; border: 1.5px solid #e5e6e8; border-radius: 10px; outline: none; background: #fafbfc; color: #1a1a1a; }
+  .ext-input:focus, .ext-select:focus { border-color: #99092C; background: #fff; }
+  .ext-select { margin-bottom: 8px; }
+  .ext-actions { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 12px 18px; background: #fff; border-top: 1px solid #f0f1f3; z-index: 11; }
 
   /* ===== МОДАЛКА КАРТОЧКИ ===== */
-  .modal {
-    position: fixed; inset: 0; background: #fff;
-    display: none; z-index: 1200; overflow-y: auto;
-  }
+  .modal { position: fixed; inset: 0; background: #fff; display: none; z-index: 1200; overflow-y: auto; }
   .modal.open { display: block; }
-  .modal-top {
-    position: sticky; top: 0; background: #fff;
-    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
-    border-bottom: 1px solid #f0f1f3; z-index: 10;
-  }
-  .back-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: #f5f6f8; border: none; font-size: 20px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    color: #1a1a1a;
-  }
+  .modal-top { position: sticky; top: 0; background: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f1f3; z-index: 10; }
+  .back-btn { width: 36px; height: 36px; border-radius: 50%; background: #f5f6f8; border: none; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .modal-top-title { font-size: 15px; font-weight: 600; }
 
   .gallery-main { width: 100%; aspect-ratio: 4/3; background: #eee; }
   .gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .gallery-thumbs {
-    display: flex; gap: 6px; overflow-x: auto;
-    padding: 8px 12px; scrollbar-width: none; background: #fafafa;
-  }
+  .gallery-thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; scrollbar-width: none; background: #fafafa; }
   .gallery-thumbs::-webkit-scrollbar { display: none; }
-  .gallery-thumbs img {
-    width: 64px; height: 48px; object-fit: cover; border-radius: 6px;
-    cursor: pointer; border: 2px solid transparent; flex-shrink: 0;
-  }
-  .gallery-thumbs img.active { border-color: #0a7c4a; }
+  .gallery-thumbs img { width: 64px; height: 48px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; flex-shrink: 0; }
+  .gallery-thumbs img.active { border-color: #99092C; }
 
   .modal-body { padding: 16px; }
-  .modal-title { font-size: 20px; font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
-  .modal-price { font-size: 26px; font-weight: 800; color: #d42a2a; margin-bottom: 16px; }
+  .modal-title { font-size: 19px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+  .modal-meta { font-size: 14px; color: #666; margin-bottom: 14px; }
+  .modal-price { font-size: 28px; font-weight: 800; color: #99092C; margin-bottom: 20px; }
 
-  .specs-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 8px; margin-bottom: 20px;
-  }
+  .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 22px; }
   .spec-box { background: #f7f8fa; border-radius: 10px; padding: 10px 12px; }
   .spec-box .lbl { font-size: 11px; color: #888; margin-bottom: 2px; }
   .spec-box .val { font-size: 14px; font-weight: 600; }
 
-  .section-h {
-    font-size: 15px; font-weight: 700; margin: 20px 0 8px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-h::before {
-    content: ''; width: 3px; height: 16px;
-    background: #0a7c4a; border-radius: 2px;
-  }
+  .section-h { font-size: 15px; font-weight: 700; margin: 20px 0 8px; display: flex; align-items: center; gap: 8px; }
+  .section-h::before { content: ''; width: 3px; height: 16px; background: #99092C; border-radius: 2px; }
   .desc-text { font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; }
-  .cta {
-    display: block; width: 100%; padding: 14px;
-    background: #0a7c4a; color: #fff; text-align: center;
-    text-decoration: none; border-radius: 12px;
-    font-weight: 700; font-size: 15px; margin-top: 20px;
+
+  .cta-wa {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px; background: #25D366; color: #fff;
+    text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px;
+    margin-top: 24px; box-shadow: 0 4px 14px rgba(37,211,102,.35);
   }
+  .cta-wa:active { transform: scale(.98); }
+  .cta-icon { font-size: 22px; }
+
+  .cta-original { display: block; text-align: center; font-size: 12px; color: #aaa; text-decoration: none; margin-top: 14px; }
+  .cta-original:hover { color: #888; }
 
   .loading, .empty { text-align: center; padding: 60px 20px; color: #888; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<!-- ===== ШАПКА ===== -->
+<!-- ============ ШАПКА ============ -->
 <div class="header">
   <div class="header-top">
-    <div class="logo">AUTO<br>ДВ</div>
+    <img src="logo.png" alt="" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div class="logo-fallback" style="display:none">АВТО<br>ДВ</div>
     <div class="search-wrap">
       <input type="text" id="search" placeholder="Марка, модель...">
     </div>
@@ -336,26 +153,18 @@
     <div class="fbtn" id="btn-sort" onclick="openSort()">Параметры</div>
     <div class="fbtn" id="btn-brand" onclick="openBrands()">Марка</div>
     <div class="fbtn" id="btn-price" onclick="openPrice()">Цена</div>
-    <div class="fbtn" onclick="openExtended()">Расширенный поиск</div>
+    <div class="fbtn" id="btn-ext" onclick="openExtended()">Расширенный</div>
   </div>
 </div>
 
 <div class="count" id="count">Загрузка...</div>
 <div class="list" id="app"></div>
 
-<!-- ===== НИЖНЯЯ НАВИГАЦИЯ ===== -->
-<div class="bottom-nav">
-  <a class="nav-item active" href="#"><span class="nav-icon">🏠</span><span>Главная</span></a>
-  <a class="nav-item" href="#"><span class="nav-icon">🔍</span><span>Каталог</span></a>
-  <a class="nav-item" href="#"><span class="nav-icon">❤️</span><span>Избранное</span></a>
-  <a class="nav-item" href="#"><span class="nav-icon">👤</span><span>Профиль</span></a>
-</div>
-
-<!-- ===== БОТТОМ-ШИТ ===== -->
+<!-- ============ BOTTOM-SHEET ============ -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-head">
-    <h3 id="sheet-title">Фильтр</h3>
+    <h3 id="sheet-title"></h3>
     <button class="close" onclick="closeSheet()">×</button>
   </div>
   <div class="sheet-body" id="sheet-body"></div>
@@ -365,7 +174,7 @@
   </div>
 </div>
 
-<!-- ===== РАСШИРЕННЫЙ ПОИСК ===== -->
+<!-- ============ РАСШИРЕННЫЙ ============ -->
 <div class="ext-modal" id="ext-modal">
   <div class="ext-head">
     <button class="back" onclick="closeExtended()">←</button>
@@ -374,7 +183,7 @@
   <div class="ext-body">
     <div class="ext-section">
       <h4>Марка и модель</h4>
-      <select class="ext-select" id="ext-brand" style="margin-bottom:8px" onchange="onExtBrandChange()">
+      <select class="ext-select" id="ext-brand" onchange="onExtBrandChange()">
         <option value="">Все марки</option>
       </select>
       <select class="ext-select" id="ext-model">
@@ -384,25 +193,22 @@
 
     <div class="ext-section">
       <h4>Год выпуска</h4>
-      <div class="ext-grid">
-        <input class="ext-input" id="ext-year-min" type="number" placeholder="от" min="2000" max="2030">
-        <input class="ext-input" id="ext-year-max" type="number" placeholder="до" min="2000" max="2030">
+      <div class="year-grid" id="ext-year-grid"></div>
+    </div>
+
+    <div class="ext-section">
+      <h4>Цена</h4>
+      <div class="slider-row">
+        <div class="lbl"><span>Показывать до:</span><span class="val" id="ext-price-label">без ограничений</span></div>
+        <input type="range" id="ext-price" min="0" max="10000000" step="50000" oninput="onExtPriceChange(this.value)">
       </div>
     </div>
 
     <div class="ext-section">
-      <h4>Цена, ₽</h4>
-      <div class="ext-grid">
-        <input class="ext-input" id="ext-price-min" type="number" placeholder="от">
-        <input class="ext-input" id="ext-price-max" type="number" placeholder="до">
-      </div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Пробег, км</h4>
-      <div class="ext-grid">
-        <input class="ext-input" id="ext-km-min" type="number" placeholder="от">
-        <input class="ext-input" id="ext-km-max" type="number" placeholder="до">
+      <h4>Пробег</h4>
+      <div class="slider-row">
+        <div class="lbl"><span>Показывать до:</span><span class="val" id="ext-km-label">350 000 км</span></div>
+        <input type="range" id="ext-km" min="0" max="350000" step="5000" oninput="onExtKmChange(this.value)">
       </div>
     </div>
 
@@ -416,32 +222,32 @@
 
     <div class="ext-section">
       <h4>Объём, л</h4>
-      <div class="ext-chips" id="ext-volume-chips"></div>
+      <div class="chips-wrap" id="ext-volume-chips"></div>
     </div>
 
     <div class="ext-section">
       <h4>Топливо</h4>
-      <div class="ext-chips" id="ext-fuel-chips"></div>
+      <div class="chips-wrap" id="ext-fuel-chips"></div>
     </div>
 
     <div class="ext-section">
       <h4>Коробка</h4>
-      <div class="ext-chips" id="ext-gearbox-chips"></div>
+      <div class="chips-wrap" id="ext-gearbox-chips"></div>
     </div>
 
     <div class="ext-section">
       <h4>Привод</h4>
-      <div class="ext-chips" id="ext-drive-chips"></div>
+      <div class="chips-wrap" id="ext-drive-chips"></div>
     </div>
 
     <div class="ext-section">
       <h4>Тип кузова</h4>
-      <div class="ext-chips" id="ext-body-chips"></div>
+      <div class="chips-wrap" id="ext-body-chips"></div>
     </div>
 
     <div class="ext-section">
       <h4>Цвет</h4>
-      <div class="ext-chips" id="ext-color-chips"></div>
+      <div class="chips-wrap" id="ext-color-chips"></div>
     </div>
   </div>
   <div class="ext-actions">
@@ -450,58 +256,66 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛКА КАРТОЧКИ ===== -->
+<!-- ============ КАРТОЧКА ============ -->
 <div id="modal" class="modal">
   <div class="modal-top">
     <button class="back-btn" onclick="closeModal()">←</button>
-    <div class="modal-top-title" id="m-top-title">Автомобиль</div>
+    <div class="modal-top-title" id="m-top-title"></div>
   </div>
   <div class="gallery-main"><img id="m-img" src="" alt=""></div>
   <div class="gallery-thumbs" id="m-thumbs"></div>
   <div class="modal-body">
     <div class="modal-title" id="m-title"></div>
+    <div class="modal-meta" id="m-meta"></div>
     <div class="modal-price" id="m-price"></div>
     <div class="specs-grid" id="m-specs"></div>
     <div class="section-h">Описание</div>
     <div class="desc-text" id="m-desc"></div>
-    <a class="cta" id="m-link" href="#" target="_blank" rel="noopener">Открыть на che168 →</a>
+    <a class="cta-wa" id="m-wa" href="#" target="_blank" rel="noopener">
+      <span class="cta-icon">💬</span> Связаться с менеджером
+    </a>
+    <a class="cta-original" id="m-original" href="#" target="_blank" rel="noopener">Оригинал объявления</a>
   </div>
 </div>
 
 <script>
+  // ============ КОНФИГ ============
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
+  const MANAGER_WA = '79000000000'; // ← заменишь на номер менеджера позже (без +, без пробелов)
+
+  const VOLUME_RANGES = [
+    { label: '1,0–1,5', min: 1.0, max: 1.5 },
+    { label: '1,5–2,0', min: 1.5, max: 2.0 },
+    { label: '2,0–3,0', min: 2.0, max: 3.0 },
+    { label: '3,0–4,0', min: 3.0, max: 4.0 }
+  ];
 
   let CARS = [];
   let FILTERED = [];
   let SORT = 'default';
-  let SHEET_TYPE = null; // 'sort' | 'brand' | 'price'
+  let SHEET_TYPE = null;
+  let TMP = {};
 
-  // Активные фильтры
+  // Фильтры (brand - одиночный, остальные Set'ы)
   const F = {
     search: '',
-    brands: new Set(),
-    priceMin: null, priceMax: null,
-    yearMin: null, yearMax: null,
-    kmMin: null, kmMax: null,
+    brand: '',
+    model: '',
+    priceMax: null,
+    kmMax: null,
     powerMin: null, powerMax: null,
-    volumes: new Set(),
+    years: new Set(),
+    volumes: new Set(),   // индексы VOLUME_RANGES
     fuels: new Set(),
     gearboxes: new Set(),
     drives: new Set(),
     bodies: new Set(),
-    colors: new Set(),
-    model: ''
+    colors: new Set()
   };
 
-  // Временные (для sheet)
-  let TMP = {};
+  function formatPrice(n) { return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽'; }
+  function formatKm(n) { return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км'; }
 
-  function formatPrice(n) {
-    return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
-  }
-  function formatKm(n) {
-    return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
-  }
   function parseCSV(text) {
     const rows = []; let row = [], cell = '', inQuotes = false;
     for (let i = 0; i < text.length; i++) {
@@ -511,53 +325,66 @@
         else if (ch === '"') { inQuotes = false; }
         else { cell += ch; }
       } else {
-        if (ch === '"') { inQuotes = true; }
+        if (ch === '"') inQuotes = true;
         else if (ch === ',') { row.push(cell); cell = ''; }
         else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
-        else if (ch !== '\r') { cell += ch; }
+        else if (ch !== '\r') cell += ch;
       }
     }
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function num(v) { return parseFloat(String(v||'').replace(/\s/g,'').replace(',','.')) || 0; }
+
   function fields(car) {
     return {
-      brand: car[0] || '', model: car[1] || '', trim: car[2] || '',
-      price: parseFloat(String(car[3]).replace(/\s/g,'').replace(',','.')) || 0,
-      img: car[17] || car[4] || '',
-      year: car[5] || '',
-      km: parseFloat(String(car[6]).replace(/\s/g,'').replace(',','.')) || 0,
-      url: car[7] || '', color: car[8] || '',
-      volume: car[9] || '', power: parseFloat(car[10]) || 0,
-      gearbox: car[11] || '', fuel: car[12] || '', city: car[14] || '',
-      allPhotos: car[55] || '', engine: car[56] || '',
-      drive: car[57] || '', desc: car[58] || ''
+      brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
+      price: num(car[3]),
+      img: car[17]||car[4]||'',
+      year: car[5]||'',
+      km: num(car[6]),
+      url: car[7]||'',
+      color: car[8]||'',
+      volume: num(car[9]),
+      volumeStr: car[9]||'',
+      power: num(car[10]),
+      gearbox: car[11]||'',
+      fuel: car[12]||'',
+      body: car[13]||'',
+      city: car[14]||'',
+      allPhotos: car[55]||'',
+      engine: car[56]||'',
+      drive: car[57]||'',
+      desc: car[58]||''
     };
   }
-  function norm(s) { return (s || '').toString().trim().toLowerCase(); }
 
-  // ===== ФИЛЬТРАЦИЯ =====
+  function inVolumeRange(vol, idx) {
+    const r = VOLUME_RANGES[idx];
+    return vol >= r.min && vol < r.max + 0.0001;
+  }
+
   function applyFilters() {
     FILTERED = CARS.filter(car => {
       const f = fields(car);
       if (F.search) {
-        const h = (f.brand + ' ' + f.model + ' ' + f.trim).toLowerCase();
+        const h = (f.brand+' '+f.model+' '+f.trim).toLowerCase();
         if (!h.includes(F.search.toLowerCase())) return false;
       }
-      if (F.brands.size && !F.brands.has(f.brand)) return false;
-      if (F.model && norm(f.model) !== norm(F.model)) return false;
-      if (F.priceMin != null && f.price < F.priceMin) return false;
+      if (F.brand && f.brand !== F.brand) return false;
+      if (F.model && f.model !== F.model) return false;
       if (F.priceMax != null && f.price > F.priceMax) return false;
-      if (F.yearMin != null && Number(f.year) < F.yearMin) return false;
-      if (F.yearMax != null && Number(f.year) > F.yearMax) return false;
-      if (F.kmMin != null && f.km < F.kmMin) return false;
       if (F.kmMax != null && f.km > F.kmMax) return false;
       if (F.powerMin != null && f.power < F.powerMin) return false;
       if (F.powerMax != null && f.power > F.powerMax) return false;
-      if (F.volumes.size && !F.volumes.has(f.volume)) return false;
+      if (F.years.size && !F.years.has(String(f.year).replace('.0',''))) return false;
+      if (F.volumes.size) {
+        let ok = false;
+        for (const idx of F.volumes) if (inVolumeRange(f.volume, idx)) { ok = true; break; }
+        if (!ok) return false;
+      }
       if (F.fuels.size && !F.fuels.has(f.fuel)) return false;
       if (F.gearboxes.size && !F.gearboxes.has(f.gearbox)) return false;
       if (F.drives.size && !F.drives.has(f.drive)) return false;
@@ -566,24 +393,13 @@
       return true;
     });
 
-    // Сортировка
-    if (SORT === 'new') {
-      FILTERED.sort((a,b) => {
-        const da = new Date(fields(a).url ? '' : ''); // упрощённо
-        return 0;
-      });
-    } else if (SORT === 'km-asc') {
-      FILTERED.sort((a,b) => fields(a).km - fields(b).km);
-    } else if (SORT === 'year-desc') {
-      FILTERED.sort((a,b) => Number(fields(b).year) - Number(fields(a).year));
-    } else if (SORT === 'price-asc') {
-      FILTERED.sort((a,b) => fields(a).price - fields(b).price);
-    } else if (SORT === 'price-desc') {
-      FILTERED.sort((a,b) => fields(b).price - fields(a).price);
-    }
+    if (SORT === 'km-asc') FILTERED.sort((a,b)=>fields(a).km-fields(b).km);
+    else if (SORT === 'year-desc') FILTERED.sort((a,b)=>Number(fields(b).year)-Number(fields(a).year));
+    else if (SORT === 'price-asc') FILTERED.sort((a,b)=>fields(a).price-fields(b).price);
+    else if (SORT === 'price-desc') FILTERED.sort((a,b)=>fields(b).price-fields(a).price);
 
     renderList();
-    updateFilterButtons();
+    updateButtons();
   }
 
   function renderList() {
@@ -598,12 +414,8 @@
           <div class="row-img"><img src="${esc(f.img)}" alt="" loading="lazy" onerror="this.style.display='none'"></div>
           <div class="row-body">
             <div>
-              <div class="row-title">${esc(f.brand)} ${esc(f.model)}</div>
+              <div class="row-title">${esc(f.brand)} ${esc(f.model)} ${esc(f.trim)}</div>
               <div class="row-sub">${esc(f.year)} г. • ${formatKm(f.km)} • ${esc(f.city)}</div>
-              <div class="row-tags">
-                <span class="tag">Проверено</span>
-                ${f.gearbox ? `<span class="tag blue">${esc(f.gearbox)}</span>` : ''}
-              </div>
             </div>
             <div class="row-price">${formatPrice(f.price)}</div>
           </div>
@@ -611,10 +423,17 @@
     }).join('');
   }
 
-  function updateFilterButtons() {
-    document.getElementById('btn-brand').classList.toggle('active', F.brands.size > 0);
-    document.getElementById('btn-price').classList.toggle('active', F.priceMin != null || F.priceMax != null);
+  function updateButtons() {
+    document.getElementById('btn-brand').classList.toggle('active', !!F.brand);
+    document.getElementById('btn-price').classList.toggle('active', F.priceMax != null);
     document.getElementById('btn-sort').classList.toggle('active', SORT !== 'default');
+    document.getElementById('btn-ext').classList.toggle('active', isExtActive());
+  }
+
+  function isExtActive() {
+    return F.model || F.years.size || F.volumes.size || F.fuels.size ||
+           F.gearboxes.size || F.drives.size || F.bodies.size || F.colors.size ||
+           F.powerMin != null || F.powerMax != null || F.kmMax != null;
   }
 
   // ===== SHEET =====
@@ -630,127 +449,120 @@
     document.getElementById('sheet-overlay').classList.remove('open');
     SHEET_TYPE = null;
   }
-  function resetSheet() { /* логика ниже */ }
 
-  // === СОРТИРОВКА ===
+  // ===== СОРТИРОВКА =====
   function openSort() {
     TMP.sort = SORT;
     const opts = [
-      ['default', 'По умолчанию'],
-      ['new', 'Недавно опубликованные'],
-      ['km-asc', 'Наименьший пробег'],
-      ['year-desc', 'Наименьший возраст автомобиля'],
-      ['price-asc', 'Цена: по возрастанию'],
-      ['price-desc', 'Цена: по убыванию']
+      ['default','По умолчанию'],
+      ['year-desc','Наименьший возраст автомобиля'],
+      ['km-asc','Наименьший пробег'],
+      ['price-asc','Цена: по возрастанию'],
+      ['price-desc','Цена: по убыванию']
     ];
-    const html = opts.map(([v, l]) => `
-      <label class="radio-row ${SORT === v ? 'selected' : ''}">
-        <input type="radio" name="sort" value="${v}" ${SORT === v ? 'checked' : ''} onchange="TMP.sort='${v}'">
+    const html = opts.map(([v,l]) => `
+      <label class="radio-row ${SORT===v?'selected':''}">
+        <input type="radio" name="sort" value="${v}" ${SORT===v?'checked':''} onchange="TMP.sort='${v}'">
         ${l}
-      </label>
-    `).join('');
+      </label>`).join('');
     openSheet('Параметры сортировки', html);
+  }
+
+  // ===== МАРКА =====
+  function openBrands() {
+    const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
+    const html = `<label class="radio-row ${!F.brand?'selected':''}">
+        <input type="radio" name="brand" value="" ${!F.brand?'checked':''}>
+        Все марки
+      </label>` +
+      brands.map(b => `
+        <label class="radio-row ${F.brand===b?'selected':''}">
+          <input type="radio" name="brand" value="${esc(b)}" ${F.brand===b?'checked':''}>
+          ${esc(b)}
+        </label>`).join('');
+    openSheet('Марка', html);
+  }
+
+  // ===== ЦЕНА =====
+  function openPrice() {
+    const maxPrice = Math.max(...CARS.map(c => fields(c).price), 1000000);
+    const max = Math.ceil(maxPrice / 100000) * 100000;
+    const cur = F.priceMax || max;
+    const html = `
+      <div class="slider-row">
+        <div class="lbl"><span>Показывать до:</span><span class="val" id="price-label">${F.priceMax ? formatPrice(F.priceMax) : 'без ограничений'}</span></div>
+        <input type="range" id="price-slider" min="0" max="${max}" step="50000" value="${cur}" oninput="onPriceInput(this.value)">
+      </div>
+    `;
+    TMP.priceMax = F.priceMax;
+    openSheet('Цена', html);
+  }
+  function onPriceInput(val) {
+    val = Number(val);
+    const max = Number(document.getElementById('price-slider').max);
+    if (val >= max) {
+      TMP.priceMax = null;
+      document.getElementById('price-label').textContent = 'без ограничений';
+    } else {
+      TMP.priceMax = val;
+      document.getElementById('price-label').textContent = formatPrice(val);
+    }
   }
 
   function resetSheet() {
     if (SHEET_TYPE === 'Параметры сортировки') { SORT = 'default'; closeSheet(); applyFilters(); }
-    else if (SHEET_TYPE === 'Марка') { F.brands.clear(); closeSheet(); applyFilters(); }
-    else if (SHEET_TYPE === 'Цена') { F.priceMin = null; F.priceMax = null; closeSheet(); applyFilters(); }
+    else if (SHEET_TYPE === 'Марка') { F.brand = ''; closeSheet(); applyFilters(); }
+    else if (SHEET_TYPE === 'Цена') { F.priceMax = null; closeSheet(); applyFilters(); }
   }
 
   function applySheet() {
-    if (SHEET_TYPE === 'Параметры сортировки') { SORT = TMP.sort; }
+    if (SHEET_TYPE === 'Параметры сортировки') SORT = TMP.sort;
     else if (SHEET_TYPE === 'Марка') {
-      F.brands.clear();
-      document.querySelectorAll('#sheet-body input[name="brand"]:checked').forEach(cb => F.brands.add(cb.value));
+      const sel = document.querySelector('#sheet-body input[name="brand"]:checked');
+      F.brand = sel ? sel.value : '';
     }
-    else if (SHEET_TYPE === 'Цена') {
-      const mn = document.getElementById('price-min-input').value;
-      const mx = document.getElementById('price-max-input').value;
-      F.priceMin = mn ? Number(mn) : null;
-      F.priceMax = mx ? Number(mx) : null;
-    }
+    else if (SHEET_TYPE === 'Цена') F.priceMax = TMP.priceMax;
     closeSheet();
     applyFilters();
   }
 
-  // === МАРКА ===
-  function openBrands() {
-    const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
-    const html = brands.map(b => `
-      <label class="check-row">
-        <input type="checkbox" name="brand" value="${esc(b)}" ${F.brands.has(b) ? 'checked' : ''}>
-        ${esc(b)}
-      </label>`).join('');
-    openSheet('Марка', html);
-  }
-
-  // === ЦЕНА ===
-  function openPrice() {
-    const prices = CARS.map(c => fields(c).price).filter(p => p > 0);
-    const max = Math.ceil(Math.max(...prices, 1000000) / 100000) * 100000;
-    const html = `
-      <div class="range-block">
-        <label>Диапазон цены</label>
-        <div class="range-inputs">
-          <input type="number" id="price-min-input" placeholder="от" value="${F.priceMin || ''}" step="50000">
-          <span>—</span>
-          <input type="number" id="price-max-input" placeholder="до" value="${F.priceMax || ''}" step="50000">
-        </div>
-      </div>
-      <div class="slider-row">
-        <div class="lbl"><span>Минимум</span><span id="sl-min">0 ₽</span></div>
-        <input type="range" min="0" max="${max}" step="50000" value="${F.priceMin || 0}" oninput="onPriceSlider('min', this.value)">
-      </div>
-      <div class="slider-row">
-        <div class="lbl"><span>Максимум</span><span id="sl-max">${formatPrice(max)}</span></div>
-        <input type="range" min="0" max="${max}" step="50000" value="${F.priceMax || max}" oninput="onPriceSlider('max', this.value)">
-      </div>
-    `;
-    openSheet('Цена', html);
-    document.getElementById('sl-min').textContent = formatPrice(F.priceMin || 0);
-    document.getElementById('sl-max').textContent = formatPrice(F.priceMax || max);
-  }
-
-  function onPriceSlider(which, val) {
-    val = Number(val);
-    if (which === 'min') {
-      document.getElementById('price-min-input').value = val;
-      document.getElementById('sl-min').textContent = formatPrice(val);
-    } else {
-      document.getElementById('price-max-input').value = val;
-      document.getElementById('sl-max').textContent = formatPrice(val);
-    }
-  }
-
-  // === РАСШИРЕННЫЙ ===
+  // ===== РАСШИРЕННЫЙ =====
   function openExtended() {
-    // Марки
     const brandSel = document.getElementById('ext-brand');
     const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
     brandSel.innerHTML = '<option value="">Все марки</option>' +
-      brands.map(b => `<option value="${esc(b)}" ${F.brands.size === 1 && F.brands.has(b) ? 'selected' : ''}>${esc(b)}</option>`).join('');
-
-    // Модели — обновим
+      brands.map(b => `<option value="${esc(b)}" ${F.brand===b?'selected':''}>${esc(b)}</option>`).join('');
     onExtBrandChange();
 
-    // Поля
-    document.getElementById('ext-year-min').value = F.yearMin || '';
-    document.getElementById('ext-year-max').value = F.yearMax || '';
-    document.getElementById('ext-price-min').value = F.priceMin || '';
-    document.getElementById('ext-price-max').value = F.priceMax || '';
-    document.getElementById('ext-km-min').value = F.kmMin || '';
-    document.getElementById('ext-km-max').value = F.kmMax || '';
+    // Годы
+    const years = [...new Set(CARS.map(c => String(fields(c).year).replace('.0','')).filter(Boolean))].sort((a,b)=>b-a);
+    TMP.years = new Set(F.years);
+    document.getElementById('ext-year-grid').innerHTML = years.map(y => `
+      <div class="year-cell ${F.years.has(y)?'active':''}" onclick="toggleYear(this,'${y}')">${y}</div>
+    `).join('');
+
+    // Цена
+    const maxPrice = Math.max(...CARS.map(c => fields(c).price), 1000000);
+    const max = Math.ceil(maxPrice / 100000) * 100000;
+    document.getElementById('ext-price').max = max;
+    document.getElementById('ext-price').value = F.priceMax || max;
+    document.getElementById('ext-price-label').textContent = F.priceMax ? formatPrice(F.priceMax) : 'без ограничений';
+
+    // Пробег
+    document.getElementById('ext-km').value = F.kmMax || 350000;
+    document.getElementById('ext-km-label').textContent = F.kmMax ? formatKm(F.kmMax) : '350 000 км';
+
+    // Мощность
     document.getElementById('ext-power-min').value = F.powerMin || '';
     document.getElementById('ext-power-max').value = F.powerMax || '';
 
     // Чипсы
-    renderChips('ext-volume-chips', 'volumes', [...new Set(CARS.map(c => fields(c).volume).filter(Boolean))].sort());
-    renderChips('ext-fuel-chips', 'fuels', ['бензин', 'дизель', 'электро', 'гибрид']);
-    renderChips('ext-gearbox-chips', 'gearboxes', ['AT', 'MT', 'CVT', 'DCT']);
-    renderChips('ext-drive-chips', 'drives', ['Передний привод', 'Задний привод', 'Полный привод', 'FWD', 'RWD', 'AWD']);
-    renderChips('ext-body-chips', 'bodies', ['SUV', 'sedan', 'hatchback', 'MPV', 'pickup', 'wagon', 'coupe', 'convertible']);
-    renderChips('ext-color-chips', 'colors', [...new Set(CARS.map(c => fields(c).color).filter(Boolean))].sort().slice(0, 20));
+    renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
+    renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
+    renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
+    renderChips('ext-drive-chips', 'drives', [...new Set(CARS.map(c=>fields(c).drive).filter(Boolean))].sort().map(v=>({v,l:v})));
+    renderChips('ext-body-chips', 'bodies', [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort().map(v=>({v,l:v})));
+    renderChips('ext-color-chips', 'colors', [...new Set(CARS.map(c=>fields(c).color).filter(Boolean))].sort().slice(0,20).map(v=>({v,l:v})));
 
     document.getElementById('ext-modal').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -759,56 +571,66 @@
   function renderChips(containerId, key, items) {
     const cont = document.getElementById(containerId);
     if (!cont) return;
-    cont.innerHTML = items.map(it => `
-      <div class="ext-chip ${F[key].has(it) ? 'active' : ''}" onclick="toggleChip(this,'${key}','${esc(it)}')">${esc(it)}</div>
+    cont.innerHTML = items.map(({v,l}) => `
+      <div class="chip-toggle ${F[key].has(v)?'active':''}" onclick="toggleChip(this,'${key}','${typeof v==='string'?esc(v):v}')">${esc(l)}</div>
     `).join('');
   }
 
   function toggleChip(el, key, value) {
-    if (F[key].has(value)) { F[key].delete(value); el.classList.remove('active'); }
-    else { F[key].add(value); el.classList.add('active'); }
+    const v = (key === 'volumes') ? Number(value) : value;
+    if (F[key].has(v)) { F[key].delete(v); el.classList.remove('active'); }
+    else { F[key].add(v); el.classList.add('active'); }
+  }
+
+  function toggleYear(el, y) {
+    if (F.years.has(y)) { F.years.delete(y); el.classList.remove('active'); }
+    else { F.years.add(y); el.classList.add('active'); }
   }
 
   function onExtBrandChange() {
     const brand = document.getElementById('ext-brand').value;
     const modelSel = document.getElementById('ext-model');
-    if (!brand) {
-      modelSel.innerHTML = '<option value="">Все модели</option>';
-      return;
-    }
+    if (!brand) { modelSel.innerHTML = '<option value="">Все модели</option>'; return; }
     const models = [...new Set(CARS.filter(c => c[0] === brand).map(c => c[1]).filter(Boolean))].sort();
     modelSel.innerHTML = '<option value="">Все модели</option>' +
-      models.map(m => `<option value="${esc(m)}" ${F.model === m ? 'selected' : ''}>${esc(m)}</option>`).join('');
+      models.map(m => `<option value="${esc(m)}" ${F.model===m?'selected':''}>${esc(m)}</option>`).join('');
+  }
+
+  function onExtPriceChange(v) {
+    v = Number(v); const max = Number(document.getElementById('ext-price').max);
+    F.priceMax = (v >= max) ? null : v;
+    document.getElementById('ext-price-label').textContent = F.priceMax ? formatPrice(v) : 'без ограничений';
+  }
+  function onExtKmChange(v) {
+    v = Number(v);
+    F.kmMax = (v >= 350000) ? null : v;
+    document.getElementById('ext-km-label').textContent = F.kmMax ? formatKm(v) : '350 000 км';
   }
 
   function resetExtended() {
-    ['ext-year-min','ext-year-max','ext-price-min','ext-price-max','ext-km-min','ext-km-max','ext-power-min','ext-power-max'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+    F.brand = ''; F.model = '';
+    F.years.clear(); F.volumes.clear(); F.fuels.clear();
+    F.gearboxes.clear(); F.drives.clear(); F.bodies.clear(); F.colors.clear();
+    F.priceMax = null; F.kmMax = null;
+    F.powerMin = null; F.powerMax = null;
+    document.querySelectorAll('#ext-modal .year-cell').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('#ext-modal .chip-toggle').forEach(c => c.classList.remove('active'));
     document.getElementById('ext-brand').value = '';
     document.getElementById('ext-model').innerHTML = '<option value="">Все модели</option>';
-    ['volumes','fuels','gearboxes','drives','bodies','colors'].forEach(k => F[k].clear());
-    document.querySelectorAll('.ext-chip').forEach(c => c.classList.remove('active'));
+    document.getElementById('ext-power-min').value = '';
+    document.getElementById('ext-power-max').value = '';
+    document.getElementById('ext-price').value = document.getElementById('ext-price').max;
+    document.getElementById('ext-price-label').textContent = 'без ограничений';
+    document.getElementById('ext-km').value = 350000;
+    document.getElementById('ext-km-label').textContent = '350 000 км';
   }
 
   function applyExtended() {
-    F.brands.clear();
-    const b = document.getElementById('ext-brand').value;
-    if (b) F.brands.add(b);
+    F.brand = document.getElementById('ext-brand').value;
     F.model = document.getElementById('ext-model').value;
-
-    const num = id => { const v = document.getElementById(id).value; return v ? Number(v) : null; };
-    F.yearMin = num('ext-year-min');
-    F.yearMax = num('ext-year-max');
-    F.priceMin = num('ext-price-min');
-    F.priceMax = num('ext-price-max');
-    F.kmMin = num('ext-km-min');
-    F.kmMax = num('ext-km-max');
-    F.powerMin = num('ext-power-min');
-    F.powerMax = num('ext-power-max');
-
-    document.getElementById('ext-modal').classList.remove('open');
-    document.body.style.overflow = '';
+    F.powerMin = document.getElementById('ext-power-min').value ? Number(document.getElementById('ext-power-min').value) : null;
+    F.powerMax = document.getElementById('ext-power-max').value ? Number(document.getElementById('ext-power-max').value) : null;
+    closeExtended();
     applyFilters();
   }
 
@@ -817,18 +639,28 @@
     document.body.style.overflow = '';
   }
 
-  // === МОДАЛКА КАРТОЧКИ ===
+  // ===== КАРТОЧКА =====
   function openModal(idx) {
     const f = fields(CARS[idx]);
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
-    document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' — ' + f.trim : '');
+    document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
+    document.getElementById('m-meta').textContent = `${f.year} г. / ${formatKm(f.km)} / ${f.city}`;
     document.getElementById('m-price').textContent = formatPrice(f.price);
     document.getElementById('m-desc').textContent = f.desc || '—';
-    document.getElementById('m-link').href = f.url || '#';
+    document.getElementById('m-original').href = f.url || '#';
+
+    // WhatsApp с текстом объявления
+    const waText = encodeURIComponent(
+      `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
+      `Цена: ${formatPrice(f.price)}\n` +
+      `Город: ${f.city}\n` +
+      `Ссылка: ${f.url}`
+    );
+    document.getElementById('m-wa').href = `https://wa.me/${MANAGER_WA}?text=${waText}`;
 
     const specs = [
       ['Год', f.year], ['Пробег', f.km ? formatKm(f.km) : '—'],
-      ['Объём', f.volume ? f.volume + ' л' : '—'],
+      ['Объём', f.volumeStr ? f.volumeStr + ' л' : '—'],
       ['Мощность', f.power ? f.power + ' л.с.' : '—'],
       ['Коробка', f.gearbox || '—'], ['Привод', f.drive || '—'],
       ['Топливо', f.fuel || '—'], ['Двигатель', f.engine || '—'],
@@ -840,13 +672,13 @@
 
     const photos = (f.allPhotos || f.img || '').split(',').map(s => s.trim()).filter(Boolean);
     document.getElementById('m-img').src = photos[0] || f.img || '';
-    document.getElementById('m-thumbs').innerHTML = photos.map((p, i) =>
+    document.getElementById('m-thumbs').innerHTML = photos.map((p,i) =>
       `<img src="${esc(p)}" class="${i===0?'active':''}" onerror="this.style.display='none'">`
     ).join('');
     document.querySelectorAll('#m-thumbs img').forEach(img => {
       img.addEventListener('click', () => {
         document.getElementById('m-img').src = img.src;
-        document.querySelectorAll('#m-thumbs img').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('#m-thumbs img').forEach(i=>i.classList.remove('active'));
         img.classList.add('active');
       });
     });
