@@ -8,25 +8,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f1f3; color: #1a1a1a; overflow-x: hidden; }
 
-  /* ===== ШАПКА ===== */
   .header { position: sticky; top: 0; z-index: 100; background: #fff; padding: 10px 12px 8px; box-shadow: 0 1px 0 rgba(0,0,0,.05); }
   .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-
   .logo-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-  .logo-fallback {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, #99092C, #50041a);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 800; font-size: 10px;
-    text-align: center; line-height: 1; flex-shrink: 0;
-  }
-
+  .logo-fallback { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #99092C, #50041a); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 10px; text-align: center; line-height: 1; flex-shrink: 0; }
   .search-wrap { flex: 1; position: relative; }
   .search-wrap input { width: 100%; height: 40px; border: 1.5px solid #e5e6e8; border-radius: 20px; background: #f5f6f8; padding: 0 16px 0 38px; font-size: 14px; outline: none; }
   .search-wrap input:focus { border-color: #99092C; background: #fff; }
   .search-wrap::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .5; }
 
-  /* ===== ФИЛЬТР-КНОПКИ ===== */
   .filter-bar { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; scrollbar-width: none; }
   .filter-bar::-webkit-scrollbar { display: none; }
   .fbtn { flex-shrink: 0; padding: 8px 14px; border-radius: 18px; background: #f5f6f8; font-size: 13px; color: #333; cursor: pointer; border: 1.5px solid transparent; user-select: none; display: flex; align-items: center; gap: 4px; font-weight: 500; }
@@ -36,19 +26,16 @@
 
   .count { padding: 10px 14px 6px; font-size: 12px; color: #888; }
 
-  /* ===== СПИСОК ===== */
   .list { padding: 0 8px 20px; display: flex; flex-direction: column; gap: 8px; }
   .row { background: #fff; border-radius: 12px; overflow: hidden; display: flex; gap: 10px; padding: 10px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
   .row:hover { box-shadow: 0 3px 12px rgba(0,0,0,.08); }
-  .row:active { transform: scale(.99); }
-  .row-img { width: 130px; height: 96px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #eee; }
+  .row-img { width: 130px; height: 100px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #eee; }
   .row-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
-  .row-title { font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 3px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .row-sub { font-size: 12px; color: #888; margin-bottom: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-  .row-price { font-size: 17px; font-weight: 700; color: #99092C; }
+  .row-title { font-size: 15px; font-weight: 600; line-height: 1.35; margin-bottom: 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .row-sub { font-size: 13px; color: #777; margin-bottom: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .row-price { font-size: 18px; font-weight: 700; color: #99092C; }
 
-  /* ===== BOTTOM-SHEET ===== */
   .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; z-index: 900; }
   .sheet-overlay.open { display: block; }
   .sheet { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 18px 18px 0 0; max-height: 78vh; overflow-y: auto; transform: translateY(100%); transition: transform .25s ease-out; z-index: 901; }
@@ -80,7 +67,6 @@
   .btn-reset { flex: 1; padding: 13px; background: #f5f6f8; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; color: #555; }
   .btn-apply { flex: 2; padding: 13px; background: #99092C; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; color: #fff; }
 
-  /* ===== EXT ===== */
   .ext-modal { position: fixed; inset: 0; background: #fff; display: none; z-index: 1100; overflow-y: auto; }
   .ext-modal.open { display: block; }
   .ext-head { position: sticky; top: 0; background: #fff; padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f1f3; z-index: 10; }
@@ -95,7 +81,6 @@
   .ext-select { margin-bottom: 8px; }
   .ext-actions { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 12px 18px; background: #fff; border-top: 1px solid #f0f1f3; z-index: 11; }
 
-  /* ===== МОДАЛКА КАРТОЧКИ ===== */
   .modal { position: fixed; inset: 0; background: #fff; display: none; z-index: 1200; overflow-y: auto; }
   .modal.open { display: block; }
   .modal-top { position: sticky; top: 0; background: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f1f3; z-index: 10; }
@@ -110,28 +95,21 @@
   .gallery-thumbs img.active { border-color: #99092C; }
 
   .modal-body { padding: 16px; }
-  .modal-title { font-size: 19px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
-  .modal-meta { font-size: 14px; color: #666; margin-bottom: 14px; }
-  .modal-price { font-size: 28px; font-weight: 800; color: #99092C; margin-bottom: 20px; }
+  .modal-title { font-size: 20px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+  .modal-meta { font-size: 15px; color: #555; margin-bottom: 16px; }
+  .modal-price { font-size: 30px; font-weight: 800; color: #99092C; margin-bottom: 22px; }
 
   .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 22px; }
-  .spec-box { background: #f7f8fa; border-radius: 10px; padding: 10px 12px; }
-  .spec-box .lbl { font-size: 11px; color: #888; margin-bottom: 2px; }
-  .spec-box .val { font-size: 14px; font-weight: 600; }
+  .spec-box { background: #f7f8fa; border-radius: 10px; padding: 11px 13px; }
+  .spec-box .lbl { font-size: 12px; color: #888; margin-bottom: 3px; }
+  .spec-box .val { font-size: 15px; font-weight: 600; }
 
-  .section-h { font-size: 15px; font-weight: 700; margin: 20px 0 8px; display: flex; align-items: center; gap: 8px; }
-  .section-h::before { content: ''; width: 3px; height: 16px; background: #99092C; border-radius: 2px; }
-  .desc-text { font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; }
+  .section-h { font-size: 16px; font-weight: 700; margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+  .section-h::before { content: ''; width: 3px; height: 17px; background: #99092C; border-radius: 2px; }
+  .desc-text { font-size: 15px; line-height: 1.65; color: #3a3a3a; white-space: pre-wrap; }
 
-  .cta-wa {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 16px; background: #25D366; color: #fff;
-    text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px;
-    margin-top: 24px; box-shadow: 0 4px 14px rgba(37,211,102,.35);
-  }
-  .cta-wa:active { transform: scale(.98); }
+  .cta-wa { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; background: #25D366; color: #fff; text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px; margin-top: 26px; box-shadow: 0 4px 14px rgba(37,211,102,.35); }
   .cta-icon { font-size: 22px; }
-
   .cta-original { display: block; text-align: center; font-size: 12px; color: #aaa; text-decoration: none; margin-top: 14px; }
   .cta-original:hover { color: #888; }
 
@@ -140,14 +118,11 @@
 </head>
 <body>
 
-<!-- ============ ШАПКА ============ -->
 <div class="header">
   <div class="header-top">
     <img src="logo.png" alt="" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
     <div class="logo-fallback" style="display:none">АВТО<br>ДВ</div>
-    <div class="search-wrap">
-      <input type="text" id="search" placeholder="Марка, модель...">
-    </div>
+    <div class="search-wrap"><input type="text" id="search" placeholder="Марка, модель..."></div>
   </div>
   <div class="filter-bar">
     <div class="fbtn" id="btn-sort" onclick="openSort()">Параметры</div>
@@ -160,13 +135,9 @@
 <div class="count" id="count">Загрузка...</div>
 <div class="list" id="app"></div>
 
-<!-- ============ BOTTOM-SHEET ============ -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
-  <div class="sheet-head">
-    <h3 id="sheet-title"></h3>
-    <button class="close" onclick="closeSheet()">×</button>
-  </div>
+  <div class="sheet-head"><h3 id="sheet-title"></h3><button class="close" onclick="closeSheet()">×</button></div>
   <div class="sheet-body" id="sheet-body"></div>
   <div class="sheet-actions">
     <button class="btn-reset" onclick="resetSheet()">Сбросить</button>
@@ -174,28 +145,15 @@
   </div>
 </div>
 
-<!-- ============ РАСШИРЕННЫЙ ============ -->
 <div class="ext-modal" id="ext-modal">
-  <div class="ext-head">
-    <button class="back" onclick="closeExtended()">←</button>
-    <h3>Расширенный поиск</h3>
-  </div>
+  <div class="ext-head"><button class="back" onclick="closeExtended()">←</button><h3>Расширенный поиск</h3></div>
   <div class="ext-body">
     <div class="ext-section">
       <h4>Марка и модель</h4>
-      <select class="ext-select" id="ext-brand" onchange="onExtBrandChange()">
-        <option value="">Все марки</option>
-      </select>
-      <select class="ext-select" id="ext-model">
-        <option value="">Все модели</option>
-      </select>
+      <select class="ext-select" id="ext-brand" onchange="onExtBrandChange()"><option value="">Все марки</option></select>
+      <select class="ext-select" id="ext-model"><option value="">Все модели</option></select>
     </div>
-
-    <div class="ext-section">
-      <h4>Год выпуска</h4>
-      <div class="year-grid" id="ext-year-grid"></div>
-    </div>
-
+    <div class="ext-section"><h4>Год выпуска</h4><div class="year-grid" id="ext-year-grid"></div></div>
     <div class="ext-section">
       <h4>Цена</h4>
       <div class="slider-row">
@@ -203,52 +161,25 @@
         <input type="range" id="ext-price" min="0" max="10000000" step="50000" oninput="onExtPriceChange(this.value)">
       </div>
     </div>
-
     <div class="ext-section">
       <h4>Пробег</h4>
       <div class="slider-row">
-        <div class="lbl"><span>Показывать до:</span><span class="val" id="ext-km-label">350 000 км</span></div>
+        <div class="lbl"><span>Показывать до:</span><span class="val" id="ext-km-label">без ограничений</span></div>
         <input type="range" id="ext-km" min="0" max="350000" step="5000" oninput="onExtKmChange(this.value)">
       </div>
     </div>
-
-    <div class="ext-section">
-      <h4>Мощность, л.с.</h4>
+    <div class="ext-section"><h4>Мощность, л.с.</h4>
       <div class="ext-grid">
         <input class="ext-input" id="ext-power-min" type="number" placeholder="от">
         <input class="ext-input" id="ext-power-max" type="number" placeholder="до">
       </div>
     </div>
-
-    <div class="ext-section">
-      <h4>Объём, л</h4>
-      <div class="chips-wrap" id="ext-volume-chips"></div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Топливо</h4>
-      <div class="chips-wrap" id="ext-fuel-chips"></div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Коробка</h4>
-      <div class="chips-wrap" id="ext-gearbox-chips"></div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Привод</h4>
-      <div class="chips-wrap" id="ext-drive-chips"></div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Тип кузова</h4>
-      <div class="chips-wrap" id="ext-body-chips"></div>
-    </div>
-
-    <div class="ext-section">
-      <h4>Цвет</h4>
-      <div class="chips-wrap" id="ext-color-chips"></div>
-    </div>
+    <div class="ext-section"><h4>Объём, л</h4><div class="chips-wrap" id="ext-volume-chips"></div></div>
+    <div class="ext-section"><h4>Топливо</h4><div class="chips-wrap" id="ext-fuel-chips"></div></div>
+    <div class="ext-section"><h4>Коробка</h4><div class="chips-wrap" id="ext-gearbox-chips"></div></div>
+    <div class="ext-section"><h4>Привод</h4><div class="chips-wrap" id="ext-drive-chips"></div></div>
+    <div class="ext-section"><h4>Тип кузова</h4><div class="chips-wrap" id="ext-body-chips"></div></div>
+    <div class="ext-section"><h4>Цвет</h4><div class="chips-wrap" id="ext-color-chips"></div></div>
   </div>
   <div class="ext-actions">
     <button class="btn-reset" onclick="resetExtended()">Сбросить</button>
@@ -256,7 +187,6 @@
   </div>
 </div>
 
-<!-- ============ КАРТОЧКА ============ -->
 <div id="modal" class="modal">
   <div class="modal-top">
     <button class="back-btn" onclick="closeModal()">←</button>
@@ -271,17 +201,14 @@
     <div class="specs-grid" id="m-specs"></div>
     <div class="section-h">Описание</div>
     <div class="desc-text" id="m-desc"></div>
-    <a class="cta-wa" id="m-wa" href="#" target="_blank" rel="noopener">
-      <span class="cta-icon">💬</span> Связаться с менеджером
-    </a>
+    <a class="cta-wa" id="m-wa" href="#" target="_blank" rel="noopener"><span class="cta-icon">💬</span> Связаться с менеджером</a>
     <a class="cta-original" id="m-original" href="#" target="_blank" rel="noopener">Оригинал объявления</a>
   </div>
 </div>
 
 <script>
-  // ============ КОНФИГ ============
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
-  const MANAGER_WA = '79000000000'; // ← заменишь на номер менеджера позже (без +, без пробелов)
+  const MANAGER_WA = '79000000000'; // ← заменишь на номер менеджера
 
   const VOLUME_RANGES = [
     { label: '1,0–1,5', min: 1.0, max: 1.5 },
@@ -290,40 +217,43 @@
     { label: '3,0–4,0', min: 3.0, max: 4.0 }
   ];
 
+  const BODY_LABELS = {
+    'SUV': 'Внедорожник',
+    'sedan': 'Седан',
+    'hatchback': 'Хэтчбек',
+    'MPV': 'Минивэн',
+    'pickup': 'Пикап',
+    'wagon': 'Универсал',
+    'coupe': 'Купе',
+    'convertible': 'Кабриолет'
+  };
+
   let CARS = [];
   let FILTERED = [];
   let SORT = 'default';
   let SHEET_TYPE = null;
   let TMP = {};
 
-  // Фильтры (brand - одиночный, остальные Set'ы)
   const F = {
-    search: '',
-    brand: '',
-    model: '',
-    priceMax: null,
-    kmMax: null,
+    search: '', brand: '', model: '',
+    priceMax: null, kmMax: null,
     powerMin: null, powerMax: null,
-    years: new Set(),
-    volumes: new Set(),   // индексы VOLUME_RANGES
-    fuels: new Set(),
-    gearboxes: new Set(),
-    drives: new Set(),
-    bodies: new Set(),
-    colors: new Set()
+    years: new Set(), volumes: new Set(),
+    fuels: new Set(), gearboxes: new Set(),
+    drives: new Set(), bodies: new Set(), colors: new Set()
   };
 
-  function formatPrice(n) { return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽'; }
-  function formatKm(n) { return new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км'; }
+  const fmtPrice = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
+  const fmtKm = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
 
   function parseCSV(text) {
     const rows = []; let row = [], cell = '', inQuotes = false;
     for (let i = 0; i < text.length; i++) {
-      const ch = text[i], next = text[i + 1];
+      const ch = text[i], next = text[i+1];
       if (inQuotes) {
         if (ch === '"' && next === '"') { cell += '"'; i++; }
-        else if (ch === '"') { inQuotes = false; }
-        else { cell += ch; }
+        else if (ch === '"') inQuotes = false;
+        else cell += ch;
       } else {
         if (ch === '"') inQuotes = true;
         else if (ch === ',') { row.push(cell); cell = ''; }
@@ -334,30 +264,37 @@
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
+  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const num = v => parseFloat(String(v||'').replace(/\s/g,'').replace(',','.')) || 0;
 
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function num(v) { return parseFloat(String(v||'').replace(/\s/g,'').replace(',','.')) || 0; }
+  // Нормализация даты публикации: возвращает timestamp или 0
+  function parseDate(s) {
+    if (!s) return 0;
+    s = String(s).trim();
+    const lower = s.toLowerCase();
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    if (lower === 'сегодня') return todayStart;
+    if (lower === 'вчера') return todayStart - 86400000;
+    const daysAgo = lower.match(/^(\d+)\s*дн/);
+    if (daysAgo) return todayStart - Number(daysAgo[1]) * 86400000;
+    const m1 = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (m1) return new Date(m1[3], m1[2]-1, m1[1]).getTime();
+    const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m2) return new Date(m2[1], m2[2]-1, m2[3]).getTime();
+    return 0;
+  }
 
   function fields(car) {
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
-      price: num(car[3]),
-      img: car[17]||car[4]||'',
-      year: car[5]||'',
-      km: num(car[6]),
-      url: car[7]||'',
-      color: car[8]||'',
-      volume: num(car[9]),
-      volumeStr: car[9]||'',
-      power: num(car[10]),
-      gearbox: car[11]||'',
-      fuel: car[12]||'',
-      body: car[13]||'',
-      city: car[14]||'',
-      allPhotos: car[55]||'',
-      engine: car[56]||'',
-      drive: car[57]||'',
-      desc: car[58]||''
+      price: num(car[3]), img: car[17]||car[4]||'',
+      year: car[5]||'', km: num(car[6]), url: car[7]||'',
+      color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
+      power: num(car[10]), gearbox: car[11]||'', fuel: car[12]||'',
+      city: car[14]||'', allPhotos: car[55]||'', engine: car[56]||'',
+      drive: car[57]||'', desc: car[58]||'', datePub: car[59]||'',
+      body: car[64]||''  // ← BM: Тип_кузова из VLOOKUP
     };
   }
 
@@ -393,10 +330,12 @@
       return true;
     });
 
-    if (SORT === 'km-asc') FILTERED.sort((a,b)=>fields(a).km-fields(b).km);
-    else if (SORT === 'year-desc') FILTERED.sort((a,b)=>Number(fields(b).year)-Number(fields(a).year));
-    else if (SORT === 'price-asc') FILTERED.sort((a,b)=>fields(a).price-fields(b).price);
-    else if (SORT === 'price-desc') FILTERED.sort((a,b)=>fields(b).price-fields(a).price);
+    // Сортировка
+    if (SORT === 'date-desc') FILTERED.sort((a,b) => parseDate(fields(b).datePub) - parseDate(fields(a).datePub));
+    else if (SORT === 'year-desc') FILTERED.sort((a,b) => Number(fields(b).year) - Number(fields(a).year));
+    else if (SORT === 'km-asc') FILTERED.sort((a,b) => fields(a).km - fields(b).km);
+    else if (SORT === 'price-asc') FILTERED.sort((a,b) => fields(a).price - fields(b).price);
+    else if (SORT === 'price-desc') FILTERED.sort((a,b) => fields(b).price - fields(a).price);
 
     renderList();
     updateButtons();
@@ -415,9 +354,9 @@
           <div class="row-body">
             <div>
               <div class="row-title">${esc(f.brand)} ${esc(f.model)} ${esc(f.trim)}</div>
-              <div class="row-sub">${esc(f.year)} г. • ${formatKm(f.km)} • ${esc(f.city)}</div>
+              <div class="row-sub">${esc(f.year)} г. • ${fmtKm(f.km)} • ${esc(f.city)}</div>
             </div>
-            <div class="row-price">${formatPrice(f.price)}</div>
+            <div class="row-price">${fmtPrice(f.price)}</div>
           </div>
         </div>`;
     }).join('');
@@ -429,14 +368,12 @@
     document.getElementById('btn-sort').classList.toggle('active', SORT !== 'default');
     document.getElementById('btn-ext').classList.toggle('active', isExtActive());
   }
-
   function isExtActive() {
     return F.model || F.years.size || F.volumes.size || F.fuels.size ||
            F.gearboxes.size || F.drives.size || F.bodies.size || F.colors.size ||
            F.powerMin != null || F.powerMax != null || F.kmMax != null;
   }
 
-  // ===== SHEET =====
   function openSheet(title, html) {
     SHEET_TYPE = title;
     document.getElementById('sheet-title').textContent = title;
@@ -450,15 +387,15 @@
     SHEET_TYPE = null;
   }
 
-  // ===== СОРТИРОВКА =====
   function openSort() {
     TMP.sort = SORT;
     const opts = [
-      ['default','По умолчанию'],
+      ['date-desc','Последние публикации'],
       ['year-desc','Наименьший возраст автомобиля'],
       ['km-asc','Наименьший пробег'],
       ['price-asc','Цена: по возрастанию'],
-      ['price-desc','Цена: по убыванию']
+      ['price-desc','Цена: по убыванию'],
+      ['default','По умолчанию']
     ];
     const html = opts.map(([v,l]) => `
       <label class="radio-row ${SORT===v?'selected':''}">
@@ -468,45 +405,35 @@
     openSheet('Параметры сортировки', html);
   }
 
-  // ===== МАРКА =====
   function openBrands() {
     const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
     const html = `<label class="radio-row ${!F.brand?'selected':''}">
-        <input type="radio" name="brand" value="" ${!F.brand?'checked':''}>
-        Все марки
+        <input type="radio" name="brand" value="" ${!F.brand?'checked':''}>Все марки
       </label>` +
       brands.map(b => `
         <label class="radio-row ${F.brand===b?'selected':''}">
-          <input type="radio" name="brand" value="${esc(b)}" ${F.brand===b?'checked':''}>
-          ${esc(b)}
+          <input type="radio" name="brand" value="${esc(b)}" ${F.brand===b?'checked':''}>${esc(b)}
         </label>`).join('');
     openSheet('Марка', html);
   }
 
-  // ===== ЦЕНА =====
   function openPrice() {
     const maxPrice = Math.max(...CARS.map(c => fields(c).price), 1000000);
     const max = Math.ceil(maxPrice / 100000) * 100000;
     const cur = F.priceMax || max;
     const html = `
       <div class="slider-row">
-        <div class="lbl"><span>Показывать до:</span><span class="val" id="price-label">${F.priceMax ? formatPrice(F.priceMax) : 'без ограничений'}</span></div>
+        <div class="lbl"><span>Показывать до:</span><span class="val" id="price-label">${F.priceMax ? fmtPrice(F.priceMax) : 'без ограничений'}</span></div>
         <input type="range" id="price-slider" min="0" max="${max}" step="50000" value="${cur}" oninput="onPriceInput(this.value)">
-      </div>
-    `;
+      </div>`;
     TMP.priceMax = F.priceMax;
     openSheet('Цена', html);
   }
   function onPriceInput(val) {
     val = Number(val);
     const max = Number(document.getElementById('price-slider').max);
-    if (val >= max) {
-      TMP.priceMax = null;
-      document.getElementById('price-label').textContent = 'без ограничений';
-    } else {
-      TMP.priceMax = val;
-      document.getElementById('price-label').textContent = formatPrice(val);
-    }
+    if (val >= max) { TMP.priceMax = null; document.getElementById('price-label').textContent = 'без ограничений'; }
+    else { TMP.priceMax = val; document.getElementById('price-label').textContent = fmtPrice(val); }
   }
 
   function resetSheet() {
@@ -514,7 +441,6 @@
     else if (SHEET_TYPE === 'Марка') { F.brand = ''; closeSheet(); applyFilters(); }
     else if (SHEET_TYPE === 'Цена') { F.priceMax = null; closeSheet(); applyFilters(); }
   }
-
   function applySheet() {
     if (SHEET_TYPE === 'Параметры сортировки') SORT = TMP.sort;
     else if (SHEET_TYPE === 'Марка') {
@@ -526,7 +452,6 @@
     applyFilters();
   }
 
-  // ===== РАСШИРЕННЫЙ =====
   function openExtended() {
     const brandSel = document.getElementById('ext-brand');
     const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
@@ -534,34 +459,32 @@
       brands.map(b => `<option value="${esc(b)}" ${F.brand===b?'selected':''}>${esc(b)}</option>`).join('');
     onExtBrandChange();
 
-    // Годы
     const years = [...new Set(CARS.map(c => String(fields(c).year).replace('.0','')).filter(Boolean))].sort((a,b)=>b-a);
-    TMP.years = new Set(F.years);
     document.getElementById('ext-year-grid').innerHTML = years.map(y => `
       <div class="year-cell ${F.years.has(y)?'active':''}" onclick="toggleYear(this,'${y}')">${y}</div>
     `).join('');
 
-    // Цена
     const maxPrice = Math.max(...CARS.map(c => fields(c).price), 1000000);
     const max = Math.ceil(maxPrice / 100000) * 100000;
     document.getElementById('ext-price').max = max;
     document.getElementById('ext-price').value = F.priceMax || max;
-    document.getElementById('ext-price-label').textContent = F.priceMax ? formatPrice(F.priceMax) : 'без ограничений';
+    document.getElementById('ext-price-label').textContent = F.priceMax ? fmtPrice(F.priceMax) : 'без ограничений';
 
-    // Пробег
     document.getElementById('ext-km').value = F.kmMax || 350000;
-    document.getElementById('ext-km-label').textContent = F.kmMax ? formatKm(F.kmMax) : '350 000 км';
+    document.getElementById('ext-km-label').textContent = F.kmMax ? fmtKm(F.kmMax) : 'без ограничений';
 
-    // Мощность
     document.getElementById('ext-power-min').value = F.powerMin || '';
     document.getElementById('ext-power-max').value = F.powerMax || '';
 
-    // Чипсы
     renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
     renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
     renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
     renderChips('ext-drive-chips', 'drives', [...new Set(CARS.map(c=>fields(c).drive).filter(Boolean))].sort().map(v=>({v,l:v})));
-    renderChips('ext-body-chips', 'bodies', [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort().map(v=>({v,l:v})));
+
+    // ← Тип кузова: значения-ключи (SUV, sedan...), но метки русские
+    const bodies = [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort();
+    renderChips('ext-body-chips', 'bodies', bodies.map(v => ({ v, l: BODY_LABELS[v] || v })));
+
     renderChips('ext-color-chips', 'colors', [...new Set(CARS.map(c=>fields(c).color).filter(Boolean))].sort().slice(0,20).map(v=>({v,l:v})));
 
     document.getElementById('ext-modal').classList.add('open');
@@ -599,20 +522,19 @@
   function onExtPriceChange(v) {
     v = Number(v); const max = Number(document.getElementById('ext-price').max);
     F.priceMax = (v >= max) ? null : v;
-    document.getElementById('ext-price-label').textContent = F.priceMax ? formatPrice(v) : 'без ограничений';
+    document.getElementById('ext-price-label').textContent = F.priceMax ? fmtPrice(v) : 'без ограничений';
   }
   function onExtKmChange(v) {
     v = Number(v);
     F.kmMax = (v >= 350000) ? null : v;
-    document.getElementById('ext-km-label').textContent = F.kmMax ? formatKm(v) : '350 000 км';
+    document.getElementById('ext-km-label').textContent = F.kmMax ? fmtKm(v) : 'без ограничений';
   }
 
   function resetExtended() {
     F.brand = ''; F.model = '';
     F.years.clear(); F.volumes.clear(); F.fuels.clear();
     F.gearboxes.clear(); F.drives.clear(); F.bodies.clear(); F.colors.clear();
-    F.priceMax = null; F.kmMax = null;
-    F.powerMin = null; F.powerMax = null;
+    F.priceMax = null; F.kmMax = null; F.powerMin = null; F.powerMax = null;
     document.querySelectorAll('#ext-modal .year-cell').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('#ext-modal .chip-toggle').forEach(c => c.classList.remove('active'));
     document.getElementById('ext-brand').value = '';
@@ -622,7 +544,7 @@
     document.getElementById('ext-price').value = document.getElementById('ext-price').max;
     document.getElementById('ext-price-label').textContent = 'без ограничений';
     document.getElementById('ext-km').value = 350000;
-    document.getElementById('ext-km-label').textContent = '350 000 км';
+    document.getElementById('ext-km-label').textContent = 'без ограничений';
   }
 
   function applyExtended() {
@@ -639,31 +561,27 @@
     document.body.style.overflow = '';
   }
 
-  // ===== КАРТОЧКА =====
   function openModal(idx) {
     const f = fields(CARS[idx]);
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
     document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
-    document.getElementById('m-meta').textContent = `${f.year} г. / ${formatKm(f.km)} / ${f.city}`;
-    document.getElementById('m-price').textContent = formatPrice(f.price);
+    document.getElementById('m-meta').textContent = `${f.year} г. / ${fmtKm(f.km)} / ${f.city}`;
+    document.getElementById('m-price').textContent = fmtPrice(f.price);
     document.getElementById('m-desc').textContent = f.desc || '—';
     document.getElementById('m-original').href = f.url || '#';
 
-    // WhatsApp с текстом объявления
     const waText = encodeURIComponent(
       `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
-      `Цена: ${formatPrice(f.price)}\n` +
-      `Город: ${f.city}\n` +
-      `Ссылка: ${f.url}`
+      `Цена: ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
     );
     document.getElementById('m-wa').href = `https://wa.me/${MANAGER_WA}?text=${waText}`;
 
     const specs = [
-      ['Год', f.year], ['Пробег', f.km ? formatKm(f.km) : '—'],
+      ['Год', f.year], ['Пробег', f.km ? fmtKm(f.km) : '—'],
       ['Объём', f.volumeStr ? f.volumeStr + ' л' : '—'],
       ['Мощность', f.power ? f.power + ' л.с.' : '—'],
       ['Коробка', f.gearbox || '—'], ['Привод', f.drive || '—'],
-      ['Топливо', f.fuel || '—'], ['Двигатель', f.engine || '—'],
+      ['Топливо', f.fuel || '—'], ['Кузов', BODY_LABELS[f.body] || f.body || '—'],
       ['Цвет', f.color || '—'], ['Город', f.city || '—']
     ];
     document.getElementById('m-specs').innerHTML = specs.map(([l,v]) =>
@@ -697,7 +615,6 @@
     applyFilters();
   });
 
-  // ===== ЗАГРУЗКА =====
   (async () => {
     try {
       const res = await fetch(CSV_URL);
