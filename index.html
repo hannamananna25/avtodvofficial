@@ -484,8 +484,9 @@
     renderChips('ext-drive-chips', 'drives', [...drivesSet].map(v=>({v,l:v})));
 
     // ← Тип кузова: значения-ключи (SUV, sedan...), но метки русские
-    const bodies = [...new Set(CARS.map(c=>fields(c).body).filter(Boolean))].sort();
-    renderChips('ext-body-chips', 'bodies', bodies.map(v => ({ v, l: BODY_LABELS[v] || v })));
+       const PRESET_BODIES = ['SUV','sedan','hatchback','MPV','pickup','wagon','coupe','convertible'];
+    const bodiesSet = new Set([...PRESET_BODIES, ...CARS.map(c=>fields(c).body).filter(Boolean)]);
+    renderChips('ext-body-chips', 'bodies', [...bodiesSet].map(v => ({ v, l: BODY_LABELS[v] || v })));
 
     const PRESET_COLORS = ['Белый','Черный','Серый','Серебристый','Синий','Красный','Оранжевый','Зелёный','Коричневый','Голубой','Желтый','Бежевый'];
     const colorsSet = new Set([...PRESET_COLORS, ...CARS.map(c=>fields(c).color).filter(Boolean)]);
