@@ -142,7 +142,6 @@
   .cta-original { display: block; text-align: center; font-size: 12px; color: #aaa; text-decoration: none; margin-top: 14px; }
   .cta-original:hover { color: #888; }
 
-  /* ─── Toast ─── */
   .toast {
     position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px);
     background: rgba(30,30,30,.95); color: #fff;
@@ -272,15 +271,30 @@
   const MANAGER_WA  = '79841567357';
   const MANAGER_MAX = 'https://max.ru/u/f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
 
-  // ─── Наценка ───────────────────────────────────────────
-  // В CSV цена УЖЕ в рублях (сконвертировано ранее по курсу 12,5 ₽/¥).
-  // Наша задача — добавить к ней надбавку 12 000 ¥, переведённых в рубли.
-  // Итого надбавка: 12 000 × 12,5 = 150 000 ₽
-  const CNY_RUB_RATE = 12.5;                     // курс, по которому сконвертированы цены в CSV
-  const EXTRA_CNY    = 12000;                    // надбавка в юанях
-  const EXTRA_RUB    = EXTRA_CNY * CNY_RUB_RATE; // = 150 000 ₽
+  // ─── Наценка ────────────────────────────────────────────
+  // В CSV цена уже в рублях. Добавляем надбавку в юанях, переведённую в рубли.
+  // Курс подтягивается с сайта ЦБ РФ (cbr-xml-daily.ru) при каждом запуске.
+  const EXTRA_CNY = 12000;         // надбавка в юанях (расходы по Китаю)
+  let   CNY_RUB_RATE = 12.5;       // fallback, если ЦБ не ответит
 
-  const addMarkup = priceRubFromCsv => priceRubFromCsv + EXTRA_RUB;
+  async function loadCnyRate() {
+    try {
+      const res = await fetch('https://www.cbr-xml-daily.ru/daily_json.js', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const cny = data && data.Valute && data.Valute.CNY;
+      if (cny && cny.Value) {
+        const nominal = cny.Nominal || 1;
+        CNY_RUB_RATE = cny.Value / nominal;
+        console.log('Курс ЦБ CNY/RUB =', CNY_RUB_RATE);
+      }
+    } catch (e) {
+      console.warn('Не удалось получить курс ЦБ, использую fallback', e);
+    }
+  }
+
+  // Итоговая цена: цена из CSV + надбавка (12 000 ¥ в рублях по курсу ЦБ)
+  const addMarkup = priceRubFromCsv => priceRubFromCsv + EXTRA_CNY * CNY_RUB_RATE;
 
   const VOLUME_RANGES = [
     { label: '1,0–1,5', min: 1.0, max: 1.5 },
@@ -357,11 +371,11 @@
   }
 
   function fields(car) {
-    const priceRaw = num(car[3]);          // цена из CSV (уже в рублях)
+    const priceRaw = num(car[3]);
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
-      priceRaw,                            // базовая цена из CSV
-      price: addMarkup(priceRaw),          // итоговая цена с надбавкой
+      priceRaw,
+      price: addMarkup(priceRaw),
       img: car[17]||car[4]||'',
       year: car[5]||'', km: num(car[6]), url: car[7]||'',
       color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
@@ -856,11 +870,11 @@
 
     const inquiryText = buildInquiryText(f);
 
-    // WhatsApp — автоподстановка текста
+    // WhatsApp
     document.getElementById('m-wa').href =
       `https://wa.me/${MANAGER_WA}?text=${encodeURIComponent(inquiryText)}`;
 
-    // MAX — открывает чат с менеджером; текст копируется в буфер
+    // MAX — открывает чат; текст копируется в буфер
     const maxLink = document.getElementById('m-max');
     maxLink.href = MANAGER_MAX;
     maxLink.onclick = () => {
@@ -871,6 +885,7 @@
            .catch(() => showToast('Открываем MAX…'));
     };
 
+    // Характеристики (только базовые, без юаней и курса)
     const specs = [
       ['Год', f.year],
       ['Пробег', f.km ? fmtKm(f.km) : '—'],
@@ -933,7 +948,10 @@
     applyFilters();
   });
 
+  // ─── Старт ──────────────────────────────────────────────
   (async () => {
+    document.getElementById('count').textContent = 'Загрузка курса и данных...';
+    await loadCnyRate();  // сначала курс
     try {
       const res = await fetch(CSV_URL);
       if (!res.ok) throw new Error('HTTP ' + res.status);
