@@ -246,10 +246,11 @@
       </svg>
       <span>Связаться в WhatsApp</span>
     </a>
-    <a class="cta-max" id="m-max" href="#" target="_blank" rel="noopener">
-      <span class="cta-max-icon">M</span>
-      <span>Связаться в MAX</span>
-    </a>
+   <a class="cta-max" id="m-max" href="#" target="_blank" rel="noopener">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_MAX.svg" 
+       alt="MAX" class="cta-max-icon">
+  <span>Связаться в MAX</span>
+</a>
 
     <a class="cta-original" id="m-original" href="#" target="_blank" rel="noopener">Оригинал объявления</a>
   </div>
@@ -259,16 +260,14 @@
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
 
   // ─── Контакты менеджера ─────────────────────────────────
-  const MANAGER_WA  = '79841567357';
+const MANAGER_WA  = '79841567357';
 const MANAGER_MAX = 'f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
 
-  // ─── Конвертация цены (юани → рубли) ───────────────────
-  // Цена в CSV (che168) указана в юанях. Клиенту показываем в рублях:
-  // (цена_CNY + надбавка_CNY) × курс
-  const CNY_RUB_RATE = 12;      // ← курс юаня к рублю (обновлять здесь)
-  const EXTRA_CNY    = 12000;   // ← надбавка к цене в юанях (расходы по Китаю)
+// Конвертация: цена в CSV = юани (целые числа)
+const CNY_RUB_RATE = 12;      // курс ¥ → ₽
+const EXTRA_CNY    = 12000;   // надбавка (расходы по Китаю)
 
-  const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
+const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
 
   const VOLUME_RANGES = [
     { label: '1,0–1,5', min: 1.0, max: 1.5 },
@@ -849,7 +848,11 @@ const MANAGER_MAX = 'f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA
       `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
       `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
     );
-    document.getElementById('m-max').href = `https://max.ru/u/${MANAGER_MAX}?text=${maxText}`;
+   const maxShareText = encodeURIComponent(
+  `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
+  `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
+);
+document.getElementById('m-max').href = `https://max.ru/share?text=${maxShareText}`;
 
     const specs = [
       ['Год', f.year], ['Пробег', f.km ? fmtKm(f.km) : '—'],
