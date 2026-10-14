@@ -1175,8 +1175,7 @@
   function showPwaPopup() {
     if (isStandalone()) return;                       // уже установлено — не показываем
     if (localStorage.getItem(PWA_DISMISSED_KEY)) return; // отмахнулись — не показываем
-    if (sessionStorage.getItem(PWA_SHOWN_KEY)) return;   // уже видели в этой сессии — не надоедаем
-
+   
     const overlay = document.getElementById('pwa-overlay');
     const androidBlock = document.getElementById('pwa-android-content');
     const iosBlock = document.getElementById('pwa-ios-content');
@@ -1195,8 +1194,6 @@
       // Что-то другое (Firefox без поддержки и т.п.) — не показываем
       return;
     }
-
-    sessionStorage.setItem(PWA_SHOWN_KEY, '1');
   }
 
   function closePwaPopup(dismissForever) {
@@ -1239,8 +1236,9 @@
     if (laterBtn) laterBtn.addEventListener('click', () => closePwaPopup(false));
 
     // Кнопка «Продолжить в браузере» (iOS)
+        // Кнопка «Продолжить в браузере» (iOS)
     const contBtn = document.getElementById('pwa-continue');
-    if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(true));
+    if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(false));
 
     // Показываем попап через 30 секунд
     setTimeout(showPwaPopup, 30000);
