@@ -151,7 +151,36 @@
 
   .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px); background: rgba(30,30,30,.95); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; max-width: 90%; text-align: center; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
+  /* ─── О компании ─── */
+  .about-body { padding: 24px 20px 40px; }
+  .about-logo-wrap { text-align: center; margin-bottom: 24px; }
+  .about-logo-img { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; display: inline-block; }
+  .about-logo-fallback {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: linear-gradient(135deg, #99092C, #50041a);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 16px; line-height: 1; text-align: center;
+  }
+  .about-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  .about-lead { font-size: 15px; color: #666; text-align: center; margin-bottom: 28px; line-height: 1.55; }
+  .about-block {
+    background: #f7f8fa; border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .about-block .ico { font-size: 20px; flex-shrink: 0; line-height: 1.4; }
+  .about-block .txt { font-size: 14px; line-height: 1.55; color: #333; }
+  .about-cta {
+    display: block; text-align: center;
+    background: #99092C; color: #fff; text-decoration: none;
+    padding: 16px; border-radius: 14px;
+    font-weight: 700; font-size: 16px;
+    margin-top: 26px;
+    box-shadow: 0 4px 14px rgba(153,9,44,.35);
+  }
+  .about-cta:active { background: #50041a; }
+  .about-cta-icon { margin-left: 6px; }
+  .about-footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 22px; line-height: 1.6; }
   .loading, .empty { text-align: center; padding: 60px 20px; color: #888; font-size: 14px; }
 </style>
 </head>
@@ -159,8 +188,8 @@
 
 <div class="header">
   <div class="header-top">
-    <img src="logo.png" alt="" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="logo-fallback" style="display:none">АВТО<br>ДВ</div>
+   <img src="logo.png" alt="" class="logo-img" onclick="openAbout()" style="cursor:pointer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div class="logo-fallback" onclick="openAbout()" style="display:none; cursor:pointer">АВТО<br>ДВ</div>
         <div class="search-wrap">
       <input type="text" id="search" placeholder="Марка, модель...">
       <button type="button" class="search-clear" id="search-clear" onclick="clearSearch()">×</button>
@@ -272,7 +301,55 @@
     <a class="cta-original" id="m-original" href="#" target="_blank" rel="noopener">Оригинал объявления</a>
   </div>
 </div>
+<div id="about-modal" class="modal">
+  <div class="modal-top">
+    <button class="back-btn" onclick="closeAbout()">←</button>
+    <div class="modal-top-title">О компании</div>
+  </div>
+  <div class="about-body">
+    <div class="about-logo-wrap">
+      <img src="logo.png" alt="" class="about-logo-img"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+      <div class="about-logo-fallback" style="display:none">АВТО<br>ДВ</div>
+    </div>
 
+    <div class="about-title">ООО «АвтоДВ»</div>
+    <div class="about-lead">Компания по импорту автомобилей из Азии в Россию.</div>
+
+    <div class="about-block">
+      <div class="ico">🔍</div>
+      <div class="txt">
+        Здесь вы можете самостоятельно выбирать актуальные автомобили, которые сейчас находятся
+        в продаже в Китае, сравнивать модели, характеристики и цены и находить вариант под свои
+        требования и бюджет.
+      </div>
+    </div>
+
+    <div class="about-block">
+      <div class="ico">🛡️</div>
+      <div class="txt">
+        Вы выбираете автомобиль — а мы берём на себя всё остальное: проверку автомобиля,
+        бронирование и покупку, логистику, таможенное оформление, документы и доставку в Россию.
+      </div>
+    </div>
+
+    <div class="about-block">
+      <div class="ico">🤝</div>
+      <div class="txt">
+        Вы контролируете выбор — мы занимаемся всем, что нужно, чтобы автомобиль оказался у вас.
+      </div>
+    </div>
+
+    <a class="about-cta" href="https://avtodvofficial.ru/" target="_blank" rel="noopener">
+      Перейти на сайт компании<span class="about-cta-icon">→</span>
+    </a>
+
+    <div class="about-footer">
+      © АвтоДВ · Импорт автомобилей из Китая<br>
+      avtodvofficial.ru
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -952,6 +1029,16 @@
 
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+   function openAbout() {
+    const m = document.getElementById('about-modal');
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    m.scrollTop = 0;
+  }
+  function closeAbout() {
+    document.getElementById('about-modal').classList.remove('open');
     document.body.style.overflow = '';
   }
 
