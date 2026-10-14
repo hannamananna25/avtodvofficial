@@ -381,7 +381,7 @@
       if (F.gearboxes.size && !F.gearboxes.has(f.gearbox)) return false;
       if (F.drives.size && !F.drives.has(f.drive)) return false;
       // Фильтр по кузову работает только если у машины есть тип кузова
-      if (F.bodies.size && f.body && !F.bodies.has(f.body)) return false;
+      if (F.bodies.size && !F.bodies.has(f.body)) return false;
       if (F.colors.size && !F.colors.has(f.color)) return false;
       return true;
     });
