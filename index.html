@@ -133,19 +133,26 @@
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; padding: 16px; color: #fff; text-decoration: none;
     border-radius: 14px; font-weight: 700; font-size: 16px;
+    cursor: pointer;
   }
   .cta-wa { background: #25D366; box-shadow: 0 4px 14px rgba(37,211,102,.35); margin-top: 26px; }
   .cta-max { background: linear-gradient(135deg, #7B2FF7, #5B18C9); box-shadow: 0 4px 14px rgba(123,47,247,.35); margin-top: 10px; }
   .cta-svg { width: 22px; height: 22px; flex-shrink: 0; }
-  .cta-max-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 24px; height: 24px; border-radius: 7px;
-    background: #fff; color: #7B2FF7;
-    font-weight: 900; font-size: 14px; line-height: 1;
-    flex-shrink: 0; letter-spacing: -0.5px;
-  }
+  .cta-max-icon { width: 24px; height: 24px; flex-shrink: 0; }
   .cta-original { display: block; text-align: center; font-size: 12px; color: #aaa; text-decoration: none; margin-top: 14px; }
   .cta-original:hover { color: #888; }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px);
+    background: rgba(30,30,30,.95); color: #fff;
+    padding: 12px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 500;
+    z-index: 2000; opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .loading, .empty { text-align: center; padding: 60px 20px; color: #888; font-size: 14px; }
 </style>
@@ -246,28 +253,34 @@
       </svg>
       <span>Связаться в WhatsApp</span>
     </a>
-   <a class="cta-max" id="m-max" href="#" target="_blank" rel="noopener">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_MAX.svg" 
-       alt="MAX" class="cta-max-icon">
-  <span>Связаться в MAX</span>
-</a>
+
+    <a class="cta-max" id="m-max" href="#" target="_blank" rel="noopener">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/%D0%9B%D0%BE%D0%B3%D0%BE%D1%82%D0%B8%D0%BF_MAX.svg" alt="MAX" class="cta-max-icon">
+      <span>Связаться в MAX</span>
+    </a>
 
     <a class="cta-original" id="m-original" href="#" target="_blank" rel="noopener">Оригинал объявления</a>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1-3b6Tcjq5bzQkyGzoROXeLX9u-9Jr8_HT1K86HNA773B_xbbuRxzTLJ5OXENOOgUQHC2n0IHf2f/pub?gid=0&single=true&output=csv';
 
   // ─── Контакты менеджера ─────────────────────────────────
-const MANAGER_WA  = '79841567357';
-const MANAGER_MAX = 'f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
+  const MANAGER_WA  = '79841567357';
+  const MANAGER_MAX = 'https://max.ru/u/f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
 
-// Конвертация: цена в CSV = юани (целые числа)
-const CNY_RUB_RATE = 12;      // курс ¥ → ₽
-const EXTRA_CNY    = 12000;   // надбавка (расходы по Китаю)
+  // ─── Наценка ───────────────────────────────────────────
+  // В CSV цена УЖЕ в рублях (сконвертировано ранее по курсу 12,5 ₽/¥).
+  // Наша задача — добавить к ней надбавку 12 000 ¥, переведённых в рубли.
+  // Итого надбавка: 12 000 × 12,5 = 150 000 ₽
+  const CNY_RUB_RATE = 12.5;                     // курс, по которому сконвертированы цены в CSV
+  const EXTRA_CNY    = 12000;                    // надбавка в юанях
+  const EXTRA_RUB    = EXTRA_CNY * CNY_RUB_RATE; // = 150 000 ₽
 
-const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
+  const addMarkup = priceRubFromCsv => priceRubFromCsv + EXTRA_RUB;
 
   const VOLUME_RANGES = [
     { label: '1,0–1,5', min: 1.0, max: 1.5 },
@@ -304,7 +317,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
 
   const fmtPrice = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
   const fmtKm = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' км';
-  const fmtNum = n => new Intl.NumberFormat('ru-RU').format(Math.round(n));
 
   function parseCSV(text) {
     const rows = []; let row = [], cell = '', inQuotes = false;
@@ -345,11 +357,11 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
   }
 
   function fields(car) {
-    const priceCny = num(car[3]);
+    const priceRaw = num(car[3]);          // цена из CSV (уже в рублях)
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
-      priceCny,
-      price: cnyToRub(priceCny),   // цена в рублях (уже с надбавкой и конвертацией)
+      priceRaw,                            // базовая цена из CSV
+      price: addMarkup(priceRaw),          // итоговая цена с надбавкой
       img: car[17]||car[4]||'',
       year: car[5]||'', km: num(car[6]), url: car[7]||'',
       color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
@@ -645,10 +657,7 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
     const track = document.getElementById('m-track');
     const photos = window.__galleryPhotos || [];
     if (!track || idx < 0 || idx >= photos.length) return;
-
-    // сбрасываем зум на всех фото при перелистывании
     resetGalleryZoom();
-
     window.__galleryIdx = idx;
     track.style.transform = `translateX(-${idx * 100}%)`;
     document.querySelectorAll('#m-thumbs img').forEach((i, k) => {
@@ -700,7 +709,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
 
     el.addEventListener('touchstart', e => {
       if (e.touches.length === 2) {
-        // НАЧАЛО PINCH
         pinchMode = true;
         isDragging = false;
         panMode = false;
@@ -721,7 +729,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
         const scale = getScale(img);
 
         if (scale > 1) {
-          // РЕЖИМ PAN
           panMode = true;
           panStartX = e.touches[0].clientX;
           panStartY = e.touches[0].clientY;
@@ -729,7 +736,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
           panTy = getTy(img);
           return;
         }
-        // РЕЖИМ SWIPE
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
         isDragging = true;
@@ -775,7 +781,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
         if (scale < 1.05) {
           setTransform(img, 1, 0, 0, true);
         } else if (e.touches.length === 1) {
-          // остался 1 палец — переходим в PAN
           panMode = true;
           panStartX = e.touches[0].clientX;
           panStartY = e.touches[0].clientY;
@@ -797,7 +802,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
       const dx = touch.clientX - startX;
       const dy = touch.clientY - startY;
 
-      // Двойной тап — зум/сброс
       if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
         const now = Date.now();
         if (now - lastTapTime < 300) {
@@ -816,7 +820,6 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
         return;
       }
 
-      // Свайп между фото
       if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
       const idx = window.__galleryIdx || 0;
       if (dx < 0) goToPhoto(idx + 1);
@@ -825,6 +828,21 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
 
     el.addEventListener('touchend', finish, { passive: true });
     el.addEventListener('touchcancel', finish, { passive: true });
+  }
+
+  // ─── Toast ─────────────────────────────────────────────
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function buildInquiryText(f) {
+    return `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
+           `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`;
   }
 
   function openModal(idx) {
@@ -836,33 +854,34 @@ const cnyToRub = cny => (cny + EXTRA_CNY) * CNY_RUB_RATE;
     document.getElementById('m-desc').textContent = f.desc || '—';
     document.getElementById('m-original').href = f.url || '#';
 
-    // WhatsApp
-    const waText = encodeURIComponent(
-      `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
-      `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
-    );
-    document.getElementById('m-wa').href = `https://wa.me/${MANAGER_WA}?text=${waText}`;
+    const inquiryText = buildInquiryText(f);
 
-    // MAX — ссылка на профиль по номеру
-    const maxText = encodeURIComponent(
-      `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
-      `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
-    );
-   const maxShareText = encodeURIComponent(
-  `Здравствуйте! Интересует ${f.brand} ${f.model} ${f.year} г., ${f.trim}.\n` +
-  `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`
-);
-document.getElementById('m-max').href = `https://max.ru/share?text=${maxShareText}`;
+    // WhatsApp — автоподстановка текста
+    document.getElementById('m-wa').href =
+      `https://wa.me/${MANAGER_WA}?text=${encodeURIComponent(inquiryText)}`;
+
+    // MAX — открывает чат с менеджером; текст копируется в буфер
+    const maxLink = document.getElementById('m-max');
+    maxLink.href = MANAGER_MAX;
+    maxLink.onclick = () => {
+      const write = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(inquiryText)
+        : Promise.reject();
+      write.then(() => showToast('Текст скопирован — вставьте в чат MAX'))
+           .catch(() => showToast('Открываем MAX…'));
+    };
 
     const specs = [
-      ['Год', f.year], ['Пробег', f.km ? fmtKm(f.km) : '—'],
+      ['Год', f.year],
+      ['Пробег', f.km ? fmtKm(f.km) : '—'],
       ['Объём', f.volumeStr ? f.volumeStr + ' л' : '—'],
       ['Мощность', f.power ? f.power + ' л.с.' : '—'],
-      ['Коробка', f.gearbox || '—'], ['Привод', f.drive || '—'],
-      ['Топливо', f.fuel || '—'], ['Кузов', BODY_LABELS[f.body] || f.body || '—'],
-      ['Цвет', f.color || '—'], ['Город', f.city || '—'],
-      ['Цена в юанях', f.priceCny ? fmtNum(f.priceCny) + ' ¥' : '—'],
-      ['Курс', CNY_RUB_RATE + ' ₽/¥ (+' + fmtNum(EXTRA_CNY) + ' ¥)']
+      ['Коробка', f.gearbox || '—'],
+      ['Привод', f.drive || '—'],
+      ['Топливо', f.fuel || '—'],
+      ['Кузов', BODY_LABELS[f.body] || f.body || '—'],
+      ['Цвет', f.color || '—'],
+      ['Город', f.city || '—']
     ];
     document.getElementById('m-specs').innerHTML = specs.map(([l,v]) =>
       `<div class="spec-box"><div class="lbl">${esc(l)}</div><div class="val">${esc(v)}</div></div>`
