@@ -45,6 +45,15 @@
   .sheet-head h3 { font-size: 17px; font-weight: 700; }
   .sheet-head .close { background: none; border: none; font-size: 22px; color: #888; cursor: pointer; padding: 0 4px; }
   .sheet-body { padding: 12px 18px 24px; }
+   .brand-search-input {
+    width: 100%; height: 42px;
+    padding: 0 14px; font-size: 14px;
+    border: 1.5px solid #e5e6e8; border-radius: 10px;
+    background: #fafbfc; outline: none;
+    margin-bottom: 10px;
+  }
+  .brand-search-input:focus { border-color: #99092C; background: #fff; }
+  .brand-count { color: #999; font-weight: 400; font-size: 13px; margin-left: 6px; }
 
   .radio-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f5f6f8; cursor: pointer; font-size: 14px; }
   .radio-row:last-child { border-bottom: none; }
@@ -463,16 +472,46 @@
     openSheet('Параметры сортировки', html);
   }
 
-  function openBrands() {
-    const brands = [...new Set(CARS.map(c => c[0]).filter(Boolean))].sort();
-    const html = `<label class="radio-row ${!F.brand?'selected':''}">
-        <input type="radio" name="brand" value="" ${!F.brand?'checked':''}>Все марки
-      </label>` +
-      brands.map(b => `
-        <label class="radio-row ${F.brand===b?'selected':''}">
-          <input type="radio" name="brand" value="${esc(b)}" ${F.brand===b?'checked':''}>${esc(b)}
-        </label>`).join('');
+   function openBrands() {
+    // Считаем количество листингов по каждой марке
+    const counts = {};
+    CARS.forEach(c => {
+      const b = c[0];
+      if (b) counts[b] = (counts[b] || 0) + 1;
+    });
+    const brands = Object.keys(counts).sort();
+    const totalAll = CARS.length;
+
+    const html = `
+      <input type="text" id="brand-search" class="brand-search-input"
+             placeholder="Поиск марки..." oninput="filterBrandList(this.value)"
+             autocomplete="off">
+      <div id="brand-list">
+        <label class="radio-row ${!F.brand?'selected':''}" data-brand="">
+          <input type="radio" name="brand" value="" ${!F.brand?'checked':''}>
+          Все марки<span class="brand-count">(${totalAll})</span>
+        </label>
+        ${brands.map(b => `
+          <label class="radio-row ${F.brand===b?'selected':''}" data-brand="${esc(b.toLowerCase())}">
+            <input type="radio" name="brand" value="${esc(b)}" ${F.brand===b?'checked':''}>
+            ${esc(b)}<span class="brand-count">(${counts[b]})</span>
+          </label>`).join('')}
+      </div>`;
     openSheet('Марка', html);
+
+    // Автофокус на поиск — на телефоне сразу открывается клавиатура
+    setTimeout(() => {
+      const inp = document.getElementById('brand-search');
+      if (inp) inp.focus();
+    }, 300);
+  }
+
+  function filterBrandList(q) {
+    q = String(q || '').toLowerCase().trim();
+    document.querySelectorAll('#brand-list .radio-row').forEach(row => {
+      const name = row.dataset.brand || '';  // для «Все марки» — пустая строка
+      row.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
   }
 
   function openPrice() {
