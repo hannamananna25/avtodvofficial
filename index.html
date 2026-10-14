@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>АвтоДВ</title>
+ <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#99092C">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="АвтоДВ">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f1f3; color: #1a1a1a; overflow-x: hidden; }
@@ -181,7 +187,53 @@
   .about-cta:active { background: #50041a; }
   .about-cta-icon { margin-left: 6px; }
   .about-footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 22px; line-height: 1.6; }
-  .loading, .empty { text-align: center; padding: 60px 20px; color: #888; font-size: 14px; }
+   /* ─── Попап установки PWA ─── */
+  .pwa-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    display: none; z-index: 3000;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .pwa-overlay.show { display: flex; }
+  .pwa-card {
+    background: #fff; border-radius: 20px;
+    padding: 24px 22px 20px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    animation: pwaFadeIn .3s ease-out;
+  }
+  @keyframes pwaFadeIn {
+    from { opacity: 0; transform: translateY(20px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .pwa-icon-wrap { text-align: center; margin-bottom: 14px; }
+  .pwa-icon { width: 72px; height: 72px; border-radius: 16px; object-fit: cover; }
+  .pwa-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  .pwa-sub { font-size: 14px; color: #666; text-align: center; line-height: 1.5; margin-bottom: 20px; }
+
+  .pwa-steps { background: #f7f8fa; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; }
+  .pwa-steps ol { margin: 0; padding-left: 20px; }
+  .pwa-steps li { font-size: 14px; line-height: 1.6; margin-bottom: 8px; color: #333; }
+  .pwa-steps li:last-child { margin-bottom: 0; }
+  .pwa-steps .ico-inline { font-size: 16px; vertical-align: middle; }
+
+  .pwa-btn {
+    display: block; width: 100%;
+    background: #99092C; color: #fff;
+    border: none; border-radius: 14px;
+    padding: 15px; font-size: 16px; font-weight: 700;
+    cursor: pointer; text-align: center;
+  }
+  .pwa-btn:active { background: #50041a; }
+  .pwa-skip {
+    display: block; text-align: center;
+    font-size: 13px; color: #999;
+    background: none; border: none;
+    cursor: pointer; padding: 12px 0 0;
+    width: 100%; text-decoration: underline;
+  }
+ .loading, .empty { text-align: center; padding: 60px 20px; color: #888; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -347,6 +399,32 @@
     <div class="about-footer">
       © АвтоДВ · Импорт автомобилей из Китая<br>
       avtodvofficial.ru
+    </div>
+  </div>
+</div>
+ <div class="pwa-overlay" id="pwa-overlay">
+  <div class="pwa-card">
+    <div class="pwa-icon-wrap">
+      <img src="icon-192.png" alt="" class="pwa-icon" onerror="this.style.display='none'">
+    </div>
+    <div class="pwa-title">Установить АвтоДВ</div>
+
+    <div id="pwa-android-content" style="display:none">
+      <div class="pwa-sub">Установите приложение — оно всегда будет под рукой, откроется в один тап.</div>
+      <button class="pwa-btn" id="pwa-install-btn" type="button">Установить</button>
+      <button class="pwa-skip" id="pwa-later" type="button">Позже</button>
+    </div>
+
+    <div id="pwa-ios-content" style="display:none">
+      <div class="pwa-sub">Установите на iPhone за 3 шага:</div>
+      <div class="pwa-steps">
+        <ol>
+          <li>Нажмите кнопку <b>«Поделиться»</b> <span class="ico-inline">⎋</span> внизу экрана</li>
+          <li>Пролистайте и выберите <b>«На экран «Домой»»</b></li>
+          <li>Нажмите <b>«Добавить»</b> в правом верхнем углу</li>
+        </ol>
+      </div>
+      <button class="pwa-skip" id="pwa-continue" type="button">Продолжить в браузере</button>
     </div>
   </div>
 </div>
@@ -1079,6 +1157,102 @@
       : Promise.reject();
     write.then(() => showToast('Скопировано — вставьте в чат'))
          .catch(() => showToast('Не удалось скопировать'));
+  }
+  // ─── Установка PWA ────────────────────────────────────
+  let deferredInstall = null;
+  const PWA_SHOWN_KEY = 'avtodv_pwa_shown';
+  const PWA_DISMISSED_KEY = 'avtodv_pwa_dismissed';
+
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true;
+  }
+
+  function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }
+
+  function showPwaPopup() {
+    if (isStandalone()) return;                       // уже установлено — не показываем
+    if (localStorage.getItem(PWA_DISMISSED_KEY)) return; // отмахнулись — не показываем
+    if (sessionStorage.getItem(PWA_SHOWN_KEY)) return;   // уже видели в этой сессии — не надоедаем
+
+    const overlay = document.getElementById('pwa-overlay');
+    const androidBlock = document.getElementById('pwa-android-content');
+    const iosBlock = document.getElementById('pwa-ios-content');
+
+    if (deferredInstall) {
+      // Android / Chrome — есть нативная установка
+      androidBlock.style.display = '';
+      iosBlock.style.display = 'none';
+      overlay.classList.add('show');
+    } else if (isIOS()) {
+      // iOS — только инструкция
+      androidBlock.style.display = 'none';
+      iosBlock.style.display = '';
+      overlay.classList.add('show');
+    } else {
+      // Что-то другое (Firefox без поддержки и т.п.) — не показываем
+      return;
+    }
+
+    sessionStorage.setItem(PWA_SHOWN_KEY, '1');
+  }
+
+  function closePwaPopup(dismissForever) {
+    document.getElementById('pwa-overlay').classList.remove('show');
+    if (dismissForever) {
+      localStorage.setItem(PWA_DISMISSED_KEY, '1');
+    }
+  }
+
+  // Перехватываем сигнал от браузера «можно установить»
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstall = e;
+  });
+
+  // Событие «приложение установлено» — больше не показываем попап
+  window.addEventListener('appinstalled', () => {
+    localStorage.setItem(PWA_DISMISSED_KEY, '1');
+    closePwaPopup(false);
+  });
+
+  // Инициализация после загрузки страницы
+  window.addEventListener('load', () => {
+    // Кнопка «Установить» (Android)
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) installBtn.addEventListener('click', async () => {
+      if (!deferredInstall) return;
+      deferredInstall.prompt();
+      const { outcome } = await deferredInstall.userChoice;
+      deferredInstall = null;
+      if (outcome === 'accepted') {
+        localStorage.setItem(PWA_DISMISSED_KEY, '1');
+        closePwaPopup(false);
+      }
+      // Если отказ — попап остаётся открытым
+    });
+
+    // Кнопка «Позже» (Android)
+    const laterBtn = document.getElementById('pwa-later');
+    if (laterBtn) laterBtn.addEventListener('click', () => closePwaPopup(false));
+
+    // Кнопка «Продолжить в браузере» (iOS)
+    const contBtn = document.getElementById('pwa-continue');
+    if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(true));
+
+    // Показываем попап через 30 секунд
+    setTimeout(showPwaPopup, 30000);
+  });
+
+  // Регистрируем service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => {
+        console.warn('SW не зарегистрирован:', err);
+      });
+    });
   }
 
   (async () => {
