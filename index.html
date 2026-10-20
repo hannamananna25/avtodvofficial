@@ -1266,12 +1266,7 @@
       document.getElementById('app').innerHTML = '<div class="empty">Ошибка загрузки: ' + esc(e.message) + '</div>';
     }
   })();
- // --- КНОПКА ОБНОВЛЕНИЯ ---
-const btn = document.createElement('button');
-btn.innerHTML = '🔄';
-btn.style.cssText = 'position:fixed; top:15px; right:15px; z-index:9999; background:white; border:1px solid #ccc; border-radius:50%; width:40px; height:40px; font-size:20px; box-shadow:0 2px 5px rgba(0,0,0,0.2); cursor:pointer;';
-btn.onclick = () => location.reload();
-document.body.appendChild(btn);
+
 </script>
 </body>
 </html>
