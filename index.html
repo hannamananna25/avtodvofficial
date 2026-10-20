@@ -1266,17 +1266,6 @@
       document.getElementById('app').innerHTML = '<div class="empty">Ошибка загрузки: ' + esc(e.message) + '</div>';
     }
   })();
- // --- ФУНКЦИЯ ОБНОВЛЕНИЯ СВАЙПОМ ВНИЗ ---
-let touchStartY = 0;
-let touchEndY = 0;
-document.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; });
-document.addEventListener('touchend', e => {
-    touchEndY = e.changedTouches[0].screenY;
-    // Если свайп был сверху вниз и мы находимся в самом верху страницы
-    if (touchEndY > touchStartY && window.scrollY === 0) {
-        location.reload(); // Перезагружаем страницу
-    }
-});
 </script>
 </body>
 </html>
