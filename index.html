@@ -1135,32 +1135,21 @@
   }
 
   // ─── Поделиться карточкой ────────────────────────────────
-    function shareCard() {
+  function shareCard() {
     const f = fields(CARS[window.__currentCarIdx]);
-    
-    // Генерируем ссылку на наше приложение с ID машины (используем оригинальный URL как уникальный ключ)
-    const pwaUrl = window.location.origin + window.location.pathname + '?car=' + encodeURIComponent(f.url);
-    
-    const text = `Смотрите какое авто нашел: ${f.brand} ${f.model} ${f.year} г., ${f.trim}\n` +
+    const text = `${f.brand} ${f.model} ${f.year} г., ${f.trim}\n` +
                  `${fmtKm(f.km)}, ${f.city}\n` +
-                 `Цена: ${fmtPrice(f.price)}\n\n` +
-                 `Открыть в приложении АвтоДВ: ${pwaUrl}`;
+                 `Цена: ${fmtPrice(f.price)}\n` +
+                 `${f.url || ''}`;
 
+    // 1. Пробуем нативный share (работает в мобильных браузерах и PWA)
     if (navigator.share) {
       navigator.share({
         title: `${f.brand} ${f.model} ${f.year}`,
-        text: text,
-        url: pwaUrl // Добавляем url для iOS
+        text: text
       }).catch(() => { /* пользователь отменил — ок */ });
       return;
     }
-
-    const write = navigator.clipboard && navigator.clipboard.writeText
-      ? navigator.clipboard.writeText(text)
-      : Promise.reject();
-    write.then(() => showToast('Скопировано — вставьте в чат'))
-         .catch(() => showToast('Не удалось скопировать'));
-  }
 
     // 2. Fallback: копируем в буфер
     const write = navigator.clipboard && navigator.clipboard.writeText
@@ -1264,7 +1253,7 @@
     });
   }
 
-   (async () => {
+  (async () => {
     document.getElementById('count').textContent = 'Загрузка курса и данных...';
     await loadCnyRate();
     try {
@@ -1273,20 +1262,6 @@
       const text = await res.text();
       CARS = parseCSV(text).slice(1).filter(r => r[0] && r[1]);
       applyFilters();
-
-      // ─── МАГИЯ DEEP LINKS ───
-      // Проверяем, есть ли в ссылке параметр ?car=...
-      const urlParams = new URLSearchParams(window.location.search);
-      const sharedCarUrl = urlParams.get('car');
-      
-      if (sharedCarUrl) {
-        // Ищем машину с таким же URL в нашей базе
-        const idx = CARS.findIndex(c => fields(c).url === sharedCarUrl);
-        if (idx !== -1) {
-          // Если нашли — открываем карточку!
-          setTimeout(() => openModal(idx), 500); // Небольшая задержка, чтобы интерфейс успел прогрузиться
-        }
-      }
     } catch (e) {
       document.getElementById('app').innerHTML = '<div class="empty">Ошибка загрузки: ' + esc(e.message) + '</div>';
     }
