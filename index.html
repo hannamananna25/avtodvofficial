@@ -1053,6 +1053,11 @@
   function openModal(idx) {
     window.__currentCarIdx = idx;
     const f = fields(CARS[idx]);
+    
+    // ⚠️ ДОБАВЛЕНА ЭТА СТРОКА: Закрываем аккордеон описания при открытии новой карточки
+    const descBlock = document.querySelector('.car-description');
+    if (descBlock) descBlock.removeAttribute('open');
+
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
     document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
     document.getElementById('m-meta').textContent = `${f.year} г. / ${fmtKm(f.km)} / ${f.city}`;
