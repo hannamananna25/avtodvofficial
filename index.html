@@ -348,7 +348,6 @@
   <div class="gallery-thumbs" id="m-thumbs"></div>
   <div class="modal-body">
     <div class="modal-title" id="m-title"></div>
-    <div class="modal-meta" id="m-meta"></div>
     <div class="modal-price-label">Цена в Китае</div>
     <div class="modal-price" id="m-price"></div>
     <div class="specs-grid" id="m-specs"></div>
@@ -583,7 +582,6 @@
     return vol >= r.min && vol < r.max + 0.0001;
   }
 
-  // ⚠️ ИСПРАВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
   function applyFilters() {
     FILTERED = CARS.filter(car => {
       const f = fields(car);
@@ -655,7 +653,6 @@
     updateButtons();
   }
 
-  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ ОТРИСОВКИ СПИСКА
   function renderList() {
     const app = document.getElementById('app');
     document.getElementById('count').textContent = 'Найдено: ' + FILTERED.length;
@@ -1089,7 +1086,7 @@
            `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`;
   }
 
-  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ КАРТОЧКИ
+  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ КАРТОЧКИ (Убрано дублирование)
   function openModal(idx) {
     window.__currentCarIdx = idx;
     const f = fields(CARS[idx]);
@@ -1103,8 +1100,7 @@
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
     document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
     
-    // Под заголовком: год регистрации / пробег / город
-    document.getElementById('m-meta').textContent = `${regYear} г. / ${fmtKm(f.km)} / ${f.city}`;
+    // Внутри карточки больше нет дублирующей строки с пробегом/городом
     document.getElementById('m-price').textContent = fmtPrice(f.price);
     document.getElementById('m-desc').textContent = f.desc || '—';
     document.getElementById('m-original').href = f.url || '#';
@@ -1124,7 +1120,7 @@
            .catch(() => showToast('Открываем MAX…'));
     };
 
-    // В характеристиках только одна строка "Год" (год регистрации), без строки "Регистрация"
+    // В характеристиках строка "Год" содержит год регистрации
     const specs = [
       ['Год', regYear], 
       ['Пробег', f.km ? fmtKm(f.km) : '—'],
