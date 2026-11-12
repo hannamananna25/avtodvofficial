@@ -573,7 +573,7 @@
       gearbox: car[11]||'', fuel: car[12]||'',
       city: car[14]||'', allPhotos: car[55]||'', engine: car[56]||'',
       drive: car[57]||'', desc: car[58]||'', datePub: car[59]||'',
-      regDate: car[18]||'', // ДОБАВЛЕНО: Подтягиваем дату регистрации (колонка S)
+      regDate: car[18]||'', // Дата регистрации (S)
       body: car[63]||car[64]||''
     };
   }
@@ -655,6 +655,7 @@
     updateButtons();
   }
 
+  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ ОТРИСОВКИ СПИСКА
   function renderList() {
     const app = document.getElementById('app');
     document.getElementById('count').textContent = 'Найдено: ' + FILTERED.length;
@@ -662,15 +663,17 @@
     app.innerHTML = FILTERED.map(car => {
       const f = fields(car);
       const idx = CARS.indexOf(car);
-      const regStr = f.regDate ? ` (рег. ${f.regDate})` : ''; // ДОБАВЛЕНО: Показываем дату регистрации в списке
       
+      // Берем только год из даты регистрации (2026-01 -> 2026). Если её нет, берем год выпуска.
+      const regYear = f.regDate ? String(f.regDate).split('-')[0] : f.year;
+
       return `
         <div class="row" onclick="openModal(${idx})">
           <div class="row-img"><img src="${esc(f.img)}" alt="" loading="lazy" onerror="this.style.display='none'"></div>
           <div class="row-body">
             <div>
               <div class="row-title">${esc(f.brand)} ${esc(f.model)} ${esc(f.trim)}</div>
-              <div class="row-sub">${esc(f.year)} г.${regStr} / ${fmtKm(f.km)} / ${esc(f.city)}</div>
+              <div class="row-sub">${esc(regYear)} г. / ${fmtKm(f.km)} / ${esc(f.city)}</div>
             </div>
             <div>
               <div class="row-price-label">Цена в Китае</div>
@@ -1086,17 +1089,22 @@
            `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`;
   }
 
+  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ КАРТОЧКИ
   function openModal(idx) {
     window.__currentCarIdx = idx;
     const f = fields(CARS[idx]);
     
-    // ⚠️ ДОБАВЛЕНА ЭТА СТРОКА: Закрываем аккордеон описания при открытии новой карточки
+    // Берем только год из даты регистрации
+    const regYear = f.regDate ? String(f.regDate).split('-')[0] : f.year;
+
     const descBlock = document.querySelector('.car-description');
     if (descBlock) descBlock.removeAttribute('open');
 
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
     document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
-    document.getElementById('m-meta').textContent = `${f.year} г. / ${fmtKm(f.km)} / ${f.city}`;
+    
+    // Под заголовком: год регистрации / пробег / город
+    document.getElementById('m-meta').textContent = `${regYear} г. / ${fmtKm(f.km)} / ${f.city}`;
     document.getElementById('m-price').textContent = fmtPrice(f.price);
     document.getElementById('m-desc').textContent = f.desc || '—';
     document.getElementById('m-original').href = f.url || '#';
@@ -1116,9 +1124,9 @@
            .catch(() => showToast('Открываем MAX…'));
     };
 
+    // В характеристиках только одна строка "Год" (год регистрации), без строки "Регистрация"
     const specs = [
-      ['Год', f.year],
-      ['Регистрация', f.regDate || '—'], // ДОБАВЛЕНО: Выводим дату регистрации в характеристики
+      ['Год', regYear], 
       ['Пробег', f.km ? fmtKm(f.km) : '—'],
       ['Объём', f.volumeStr ? f.volumeStr + ' л' : '—'],
       ['Мощность', f.power ? `${f.power} л.с. / ${f.powerKw} кВт` : '—'],
