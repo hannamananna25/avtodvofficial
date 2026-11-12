@@ -573,6 +573,7 @@
       gearbox: car[11]||'', fuel: car[12]||'',
       city: car[14]||'', allPhotos: car[55]||'', engine: car[56]||'',
       drive: car[57]||'', desc: car[58]||'', datePub: car[59]||'',
+      regDate: car[18]||'', // ДОБАВЛЕНО: Подтягиваем дату регистрации (колонка S)
       body: car[63]||car[64]||''
     };
   }
@@ -661,13 +662,15 @@
     app.innerHTML = FILTERED.map(car => {
       const f = fields(car);
       const idx = CARS.indexOf(car);
+      const regStr = f.regDate ? ` (рег. ${f.regDate})` : ''; // ДОБАВЛЕНО: Показываем дату регистрации в списке
+      
       return `
         <div class="row" onclick="openModal(${idx})">
           <div class="row-img"><img src="${esc(f.img)}" alt="" loading="lazy" onerror="this.style.display='none'"></div>
           <div class="row-body">
             <div>
               <div class="row-title">${esc(f.brand)} ${esc(f.model)} ${esc(f.trim)}</div>
-              <div class="row-sub">${esc(f.year)} г. / ${fmtKm(f.km)} / ${esc(f.city)}</div>
+              <div class="row-sub">${esc(f.year)} г.${regStr} / ${fmtKm(f.km)} / ${esc(f.city)}</div>
             </div>
             <div>
               <div class="row-price-label">Цена в Китае</div>
@@ -1115,6 +1118,7 @@
 
     const specs = [
       ['Год', f.year],
+      ['Регистрация', f.regDate || '—'], // ДОБАВЛЕНО: Выводим дату регистрации в характеристики
       ['Пробег', f.km ? fmtKm(f.km) : '—'],
       ['Объём', f.volumeStr ? f.volumeStr + ' л' : '—'],
       ['Мощность', f.power ? `${f.power} л.с. / ${f.powerKw} кВт` : '—'],
