@@ -563,7 +563,7 @@
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
       priceRaw,
-      price: addMarkup(priceRaw),
+      price: priceRaw, // <--- ИСПРАВЛЕНО: Берем цену как есть, так как скрипт уже всё посчитал
       img: car[17]||car[4]||'',
       year: car[5]||'', km: num(car[6]), url: car[7]||'',
       color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
