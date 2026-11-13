@@ -1228,8 +1228,6 @@
   }
 
   let deferredInstall = null;
-  const PWA_SHOWN_KEY = 'avtodv_pwa_shown';
-  const PWA_DISMISSED_KEY = 'avtodv_pwa_dismissed';
 
   function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches ||
@@ -1241,8 +1239,11 @@
   }
 
   function showPwaPopup() {
+    // 1. Если приложение уже открыто с иконки на экране (Standalone) — не показываем
     if (isStandalone()) return;                       
-    if (localStorage.getItem(PWA_DISMISSED_KEY)) return; 
+    
+    // 2. Если пользователь уже нажал "Позже" в ТЕКУЩЕЙ сессии, не надоедаем
+    if (sessionStorage.getItem('pwa_dismissed')) return; 
    
     const overlay = document.getElementById('pwa-overlay');
     const androidBlock = document.getElementById('pwa-android-content');
@@ -1261,10 +1262,11 @@
     }
   }
 
-  function closePwaPopup(dismissForever) {
+  function closePwaPopup(dismissForSession) {
     document.getElementById('pwa-overlay').classList.remove('show');
-    if (dismissForever) {
-      localStorage.setItem(PWA_DISMISSED_KEY, '1');
+    if (dismissForSession) {
+      // Запоминаем только в текущей сессии. При следующем заходе окно снова появится.
+      sessionStorage.setItem('pwa_dismissed', '1');
     }
   }
 
@@ -1274,7 +1276,8 @@
   });
 
   window.addEventListener('appinstalled', () => {
-    localStorage.setItem(PWA_DISMISSED_KEY, '1');
+    // Убрали навсегда блокирующий localStorage! 
+    // Если пользователь удалит приложение, при заходе в браузер окно снова появится.
     closePwaPopup(false);
   });
 
@@ -1286,17 +1289,17 @@
       const { outcome } = await deferredInstall.userChoice;
       deferredInstall = null;
       if (outcome === 'accepted') {
-        localStorage.setItem(PWA_DISMISSED_KEY, '1');
         closePwaPopup(false);
       }
     });
 
     const laterBtn = document.getElementById('pwa-later');
-    if (laterBtn) laterBtn.addEventListener('click', () => closePwaPopup(false));
+    if (laterBtn) laterBtn.addEventListener('click', () => closePwaPopup(true));
 
     const contBtn = document.getElementById('pwa-continue');
-    if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(false));
+    if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(true));
 
+    // Показываем окно через 30 секунд, чтобы человек осмотрелся
     setTimeout(showPwaPopup, 30000);
   });
 
