@@ -468,40 +468,6 @@
   const MANAGER_WA  = '79841567357';
   const MANAGER_MAX = 'https://max.ru/u/f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
 
-  const EXTRA_CNY = 12000;
-  let   CNY_RUB_RATE = 12.5; 
-
-  async function loadCnyRate() {
-    try {
-      const res = await fetch('https://www.cbr-xml-daily.ru/daily_json.js', { cache: 'no-store' });
-      if (!res.ok) return;
-      const data = await res.json();
-      const cny = data && data.Valute && data.Valute.CNY;
-      if (cny && cny.Value) {
-        const nominal = cny.Nominal || 1;
-        CNY_RUB_RATE = cny.Value / nominal;
-        console.log('Курс ЦБ CNY/RUB =', CNY_RUB_RATE);
-      }
-    } catch (e) {
-      console.warn('Не удалось получить курс ЦБ, использую fallback 12.5');
-    }
-  }
-
-  const addMarkup = priceRubFromCsv => priceRubFromCsv + EXTRA_CNY * CNY_RUB_RATE;
-
-  const VOLUME_RANGES = [
-    { label: '1,0–1,5', min: 1.0, max: 1.5 },
-    { label: '1,5–2,0', min: 1.5, max: 2.0 },
-    { label: '2,0–3,0', min: 2.0, max: 3.0 },
-    { label: '3,0–4,0', min: 3.0, max: 4.0 }
-  ];
-
-  const BODY_LABELS = {
-    'SUV': 'Внедорожник', 'sedan': 'Седан', 'hatchback': 'Хэтчбек',
-    'MPV': 'Минивэн', 'pickup': 'Пикап', 'wagon': 'Универсал',
-    'coupe': 'Купе', 'convertible': 'Кабриолет'
-  };
-
   let CARS = [];
   let FILTERED = [];
   let SORT = 'default';
@@ -563,7 +529,7 @@
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
       priceRaw,
-      price: priceRaw, // <--- ИСПРАВЛЕНО: Берем цену как есть, так как скрипт уже всё посчитал
+      price: priceRaw, // Берем цену как есть, скрипт уже всё посчитал
       img: car[17]||car[4]||'',
       year: car[5]||'', km: num(car[6]), url: car[7]||'',
       color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
@@ -661,7 +627,6 @@
       const f = fields(car);
       const idx = CARS.indexOf(car);
       
-      // Берем только год из даты регистрации (2026-01 -> 2026). Если её нет, берем год выпуска.
       const regYear = f.regDate ? String(f.regDate).split('-')[0] : f.year;
 
       return `
@@ -1086,12 +1051,10 @@
            `Цена (в Китае): ${fmtPrice(f.price)}\nГород: ${f.city}\nСсылка: ${f.url}`;
   }
 
-  // ⚠️ ИЗМЕНЕНА ФУНКЦИЯ КАРТОЧКИ (Убрано дублирование)
   function openModal(idx) {
     window.__currentCarIdx = idx;
     const f = fields(CARS[idx]);
     
-    // Берем только год из даты регистрации
     const regYear = f.regDate ? String(f.regDate).split('-')[0] : f.year;
 
     const descBlock = document.querySelector('.car-description');
@@ -1100,7 +1063,6 @@
     document.getElementById('m-top-title').textContent = f.brand + ' ' + f.model;
     document.getElementById('m-title').textContent = f.brand + ' ' + f.model + (f.trim ? ' ' + f.trim : '');
     
-    // Внутри карточки больше нет дублирующей строки с пробегом/городом
     document.getElementById('m-price').textContent = fmtPrice(f.price);
     document.getElementById('m-desc').textContent = f.desc || '—';
     document.getElementById('m-original').href = f.url || '#';
@@ -1120,7 +1082,6 @@
            .catch(() => showToast('Открываем MAX…'));
     };
 
-    // В характеристиках строка "Год" содержит год регистрации
     const specs = [
       ['Год', regYear], 
       ['Пробег', f.km ? fmtKm(f.km) : '—'],
@@ -1239,11 +1200,8 @@
   }
 
   function showPwaPopup() {
-    // 1. Если приложение уже открыто с иконки на экране (Standalone) — не показываем
     if (isStandalone()) return;                       
-    
-    // 2. Если пользователь уже нажал "Позже" в ТЕКУЩЕЙ сессии, не надоедаем
-    if (sessionStorage.getItem('pwa_dismissed')) return; 
+    // УБРАЛИ БЛОКИРОВКУ ЧЕРЕЗ SESSIONSTORAGE!
    
     const overlay = document.getElementById('pwa-overlay');
     const androidBlock = document.getElementById('pwa-android-content');
@@ -1265,8 +1223,8 @@
   function closePwaPopup(dismissForSession) {
     document.getElementById('pwa-overlay').classList.remove('show');
     if (dismissForSession) {
-      // Запоминаем только в текущей сессии. При следующем заходе окно снова появится.
-      sessionStorage.setItem('pwa_dismissed', '1');
+      // ВМЕСТО ЗАПИСИ В ПАМЯТЬ, ЗАПУСКАЕМ ТАЙМЕР НА 30 СЕКУНД
+      setTimeout(showPwaPopup, 30000);
     }
   }
 
@@ -1276,8 +1234,6 @@
   });
 
   window.addEventListener('appinstalled', () => {
-    // Убрали навсегда блокирующий localStorage! 
-    // Если пользователь удалит приложение, при заходе в браузер окно снова появится.
     closePwaPopup(false);
   });
 
@@ -1299,7 +1255,7 @@
     const contBtn = document.getElementById('pwa-continue');
     if (contBtn) contBtn.addEventListener('click', () => closePwaPopup(true));
 
-    // Показываем окно через 30 секунд, чтобы человек осмотрелся
+    // Показываем окно первый раз через 30 секунд
     setTimeout(showPwaPopup, 30000);
   });
 
@@ -1324,8 +1280,7 @@
   }
 
   (async () => {
-    document.getElementById('count').textContent = 'Загрузка курса и данных...';
-    await loadCnyRate();
+    document.getElementById('count').textContent = 'Загрузка данных...';
     try {
       const res = await fetch(CSV_URL);
       if (!res.ok) throw new Error('HTTP ' + res.status);
