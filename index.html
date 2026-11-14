@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>АвтоДВ</title>
- <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#99092C">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f1f3; color: #1a1a1a; overflow-x: hidden; }
 
-  /* Вернули чистый белый фон, но добавили легкую рубиновую тень снизу */
+  /* Чистая белая шапка с легкой рубиновой тенью */
   .header { 
     position: sticky; 
     top: 0; 
@@ -477,6 +477,19 @@
 
   const MANAGER_WA  = '79841567357';
   const MANAGER_MAX = 'https://max.ru/u/f9LHodD0cOIFGRAobCxYyU-v1ySuTJ0WChnGfdrFrueEk2XtwWseE2j9BSA';
+
+  const VOLUME_RANGES = [
+    { label: '1,0–1,5', min: 1.0, max: 1.5 },
+    { label: '1,5–2,0', min: 1.5, max: 2.0 },
+    { label: '2,0–3,0', min: 2.0, max: 3.0 },
+    { label: '3,0–4,0', min: 3.0, max: 4.0 }
+  ];
+
+  const BODY_LABELS = {
+    'SUV': 'Внедорожник', 'sedan': 'Седан', 'hatchback': 'Хэтчбек',
+    'MPV': 'Минивэн', 'pickup': 'Пикап', 'wagon': 'Универсал',
+    'coupe': 'Купе', 'convertible': 'Кабриолет'
+  };
 
   let CARS = [];
   let FILTERED = [];
