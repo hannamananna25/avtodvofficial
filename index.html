@@ -496,6 +496,10 @@
   let SORT = 'default';
   let SHEET_TYPE = null;
   let TMP = {};
+  
+  // Переменные для плавной загрузки
+  let VISIBLE_COUNT = 30;
+  const LOAD_STEP = 30;
 
   const F = {
     search: '', brand: '', model: '',
@@ -552,7 +556,7 @@
     return {
       brand: car[0]||'', model: car[1]||'', trim: car[2]||'',
       priceRaw,
-      price: priceRaw, // Берем цену как есть, скрипт уже всё посчитал
+      price: priceRaw,
       img: car[17]||car[4]||'',
       year: car[5]||'', km: num(car[6]), url: car[7]||'',
       color: car[8]||'', volume: num(car[9]), volumeStr: car[9]||'',
@@ -561,7 +565,7 @@
       gearbox: car[11]||'', fuel: car[12]||'',
       city: car[14]||'', allPhotos: car[55]||'', engine: car[56]||'',
       drive: car[57]||'', desc: car[58]||'', datePub: car[59]||'',
-      regDate: car[18]||'', // Дата регистрации (S)
+      regDate: car[18]||'',
       body: car[63]||car[64]||''
     };
   }
@@ -572,6 +576,9 @@
   }
 
   function applyFilters() {
+    // При любом изменении фильтров сбрасываем счетчик и очищаем список
+    VISIBLE_COUNT = LOAD_STEP;
+
     FILTERED = CARS.filter(car => {
       const f = fields(car);
       if (F.search) {
@@ -638,15 +645,29 @@
     else if (SORT === 'price-asc') FILTERED.sort((a,b) => fields(a).price - fields(b).price);
     else if (SORT === 'price-desc') FILTERED.sort((a,b) => fields(b).price - fields(a).price);
 
-    renderList();
+    renderList(true); // Передаем true, чтобы полностью перерисовать список
     updateButtons();
   }
 
-  function renderList() {
+  // Функция рендера: если isNew = true, очищает список, иначе добавляет новые карточки
+  function renderList(isNew = false) {
     const app = document.getElementById('app');
     document.getElementById('count').textContent = 'Найдено: ' + FILTERED.length;
-    if (!FILTERED.length) { app.innerHTML = '<div class="empty">Ничего не найдено</div>'; return; }
-    app.innerHTML = FILTERED.map(car => {
+    
+    if (!FILTERED.length) { 
+        app.innerHTML = '<div class="empty">Ничего не найдено</div>'; 
+        return; 
+    }
+
+    if (isNew) {
+        app.innerHTML = '';
+    }
+
+    const toRender = FILTERED.slice(VISIBLE_COUNT - LOAD_STEP, VISIBLE_COUNT);
+    
+    if (toRender.length === 0) return;
+
+    const html = toRender.map(car => {
       const f = fields(car);
       const idx = CARS.indexOf(car);
       
@@ -667,6 +688,9 @@
           </div>
         </div>`;
     }).join('');
+
+    // Добавляем новые карточки в конец списка
+    app.insertAdjacentHTML('beforeend', html);
   }
 
   function updateButtons() {
@@ -1321,6 +1345,21 @@
       document.getElementById('app').innerHTML = '<div class="empty">Ошибка загрузки: ' + esc(e.message) + '</div>';
     }
   })();
+
+  // ─── БЕСКОНЕЧНЫЙ СКРОЛЛ ──────────────────────────
+  // Когда пользователь докручивает до конца, подгружаем следующие 30 карточек
+  window.addEventListener('scroll', () => {
+    // Проверяем, что мы не в самом верху (чтобы не конфликтовать с pull-to-refresh)
+    if (window.scrollY > 0) {
+      // Если до конца страницы осталось меньше 400 пикселей
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 400) {
+        if (VISIBLE_COUNT < FILTERED.length) {
+          VISIBLE_COUNT += LOAD_STEP;
+          renderList(false); // false означает, что нужно добавить карточки, а не перерисовать всё
+        }
+      }
+    }
+  });
 
   // ─── СВАЙП ВНИЗ ДЛЯ ОБНОВЛЕНИЯ ДАННЫХ ──────────────────────────
   let touchStartY = 0;
