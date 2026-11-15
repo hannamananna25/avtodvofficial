@@ -1121,37 +1121,12 @@
 
     const maxLink = document.getElementById('m-max');
     maxLink.href = MANAGER_MAX;
-    
-    // УЛУЧШЕННАЯ ЛОГИКА ДЛЯ MAX (Копирование с задержкой)
-    maxLink.onclick = (e) => {
-      e.preventDefault(); // Останавливаем мгновенный переход
-      
-      const doCopy = () => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          return navigator.clipboard.writeText(inquiryText);
-        } else {
-          // Fallback для старых Safari
-          const textarea = document.createElement('textarea');
-          textarea.value = inquiryText;
-          textarea.style.position = 'fixed'; // Скрываем
-          document.body.appendChild(textarea);
-          textarea.select();
-          try { document.execCommand('copy'); } catch (err) {}
-          document.body.removeChild(textarea);
-          return Promise.resolve();
-        }
-      };
-
-      doCopy().then(() => {
-        showToast('✅ Текст скопирован! Вставьте его в чат MAX.');
-        // Даем пользователю 1 секунду, чтобы увидеть плашку, и открываем MAX
-        setTimeout(() => {
-          window.open(MANAGER_MAX, '_blank');
-        }, 1000);
-      }).catch(() => {
-        showToast('Открываем MAX...');
-        window.open(MANAGER_MAX, '_blank');
-      });
+    maxLink.onclick = () => {
+      const write = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(inquiryText)
+        : Promise.reject();
+      write.then(() => showToast('Текст скопирован — вставьте в чат MAX'))
+           .catch(() => showToast('Открываем MAX…'));
     };
 
     const specs = [
