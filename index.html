@@ -835,25 +835,12 @@
     document.getElementById('ext-power-min').value = F.powerMin || '';
     document.getElementById('ext-power-max').value = F.powerMax || '';
 
-        renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
+    renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
     renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
-    
-    // Убрали дубли коробок, оставили только базовые
-    renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
-    
+    renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT','АТ','МТ'].map(v=>({v,l:v})));
     const PRESET_DRIVES = ['Передний привод','Задний привод','Полный привод'];
     const drivesSet = new Set([...PRESET_DRIVES, ...CARS.map(c=>fields(c).drive).filter(Boolean)]);
     renderChips('ext-drive-chips', 'drives', [...drivesSet].map(v=>({v,l:v})));
-
-    // Умная очистка для кузова (убирает дубли Внедорожник/SUV)
-    const PRESET_BODIES = ['SUV','sedan','hatchback','MPV','pickup','wagon','coupe','convertible'];
-    const uniqueBodiesMap = new Map();
-    PRESET_BODIES.forEach(b => uniqueBodiesMap.set(BODY_LABELS[b] || b, b));
-    CARS.forEach(c => {
-        let b = fields(c).body;
-        if (b) uniqueBodiesMap.set(BODY_LABELS[b] || b, b);
-    });
-    renderChips('ext-body-chips', 'bodies', [...uniqueBodiesMap.entries()].map(([label, value]) => ({ v: value, l: label })));
 
     const PRESET_BODIES = ['SUV','sedan','hatchback','MPV','pickup','wagon','coupe','convertible'];
     const bodiesSet = new Set([...PRESET_BODIES, ...CARS.map(c=>fields(c).body).filter(Boolean)]);
