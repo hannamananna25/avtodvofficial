@@ -837,14 +837,27 @@
 
     renderChips('ext-volume-chips', 'volumes', VOLUME_RANGES.map((r,i)=>({v:i,l:r.label})));
     renderChips('ext-fuel-chips', 'fuels', ['бензин','дизель','электро','гибрид'].map(v=>({v,l:v})));
-    renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT','АТ','МТ'].map(v=>({v,l:v})));
+    
+    // Убран дубль коробок передач
+    renderChips('ext-gearbox-chips', 'gearboxes', ['AT','MT','CVT','DCT'].map(v=>({v,l:v})));
+    
     const PRESET_DRIVES = ['Передний привод','Задний привод','Полный привод'];
     const drivesSet = new Set([...PRESET_DRIVES, ...CARS.map(c=>fields(c).drive).filter(Boolean)]);
     renderChips('ext-drive-chips', 'drives', [...drivesSet].map(v=>({v,l:v})));
 
+    // Умная очистка кузова от дублей
     const PRESET_BODIES = ['SUV','sedan','hatchback','MPV','pickup','wagon','coupe','convertible'];
-    const bodiesSet = new Set([...PRESET_BODIES, ...CARS.map(c=>fields(c).body).filter(Boolean)]);
-    renderChips('ext-body-chips', 'bodies', [...bodiesSet].map(v => ({ v, l: BODY_LABELS[v] || v })));
+    const uniqueBodiesMap = new Map();
+    PRESET_BODIES.forEach(b => uniqueBodiesMap.set(BODY_LABELS[b] || b, b));
+    CARS.forEach(c => {
+        let b = fields(c).body;
+        if (!b) return;
+        let label = BODY_LABELS[b] || b;
+        if (!uniqueBodiesMap.has(label)) {
+            uniqueBodiesMap.set(label, b);
+        }
+    });
+    renderChips('ext-body-chips', 'bodies', [...uniqueBodiesMap.entries()].map(([label, value]) => ({ v: value, l: label })));
 
     const PRESET_COLORS = ['Белый','Черный','Серый','Серебристый','Синий','Красный','Оранжевый','Зелёный','Коричневый','Голубой','Желтый','Бежевый'];
     const colorsSet = new Set([...PRESET_COLORS, ...CARS.map(c=>fields(c).color).filter(Boolean)]);
